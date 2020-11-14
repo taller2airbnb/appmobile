@@ -1,122 +1,85 @@
-// React Native Fetch – To make HTTP API call in React Native
-// https://aboutreact.com/react-native-http-networking/
+import React from "react"
+import { StyleSheet, Text, View, Image, Button } from "react-native"
+import * as Google from 'expo-google-app-auth';
 
-// import React in our code
-import React from 'react';
 
-// import all the components we are going to use
-import {
-  SafeAreaView,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
-
-const App = () => {
-  const getDataProfile = () => {
-    //GET request
-    fetch('https://taller2airbnb-profile.herokuapp.com/health', {
-      method: 'GET',
-      //Request Type
-    })
-      .then((response) => response.json())
-      //If response is in json then in success
-      .then((responseJson) => {
-        //Success
-        alert(JSON.stringify(responseJson));
-        console.log(responseJson);
+export default class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      signedIn: false,
+      name: "",
+      photoUrl: ""
+    }
+  }
+  signIn = async () => {
+    try {
+      const result = await Google.logInAsync({
+        androidClientId:
+        "266504353107-usdo5g4iii624bn9hrpo7aaa1t7qeh33.apps.googleusercontent.com",
+        scopes: ["https://www.googleapis.com/auth/userinfo.profile", "email"]
       })
-      //If response is not in json then in error
-      .catch((error) => {
-        //Error
-        alert(JSON.stringify(error));
-        console.error(error);
-      });
-  };
-
-  const getDataBusinessCore = () => {
-    //GET request
-    fetch('https://taller2airbnb-businesscore.herokuapp.com/health', {
-      method: 'GET',
-      //Request Type
-    })
-      .then((response) => response.json())
-      //If response is in json then in success
-      .then((responseJson) => {
-        //Success
-        alert(JSON.stringify(responseJson));
-        console.log(responseJson);
-      })
-      //If response is not in json then in error
-      .catch((error) => {
-        //Error
-        alert(JSON.stringify(error));
-        console.error(error);
-      });
-  };
-
-  return (
-    <SafeAreaView style={{flex: 1}}>
+      
+      if (result.type === "success") {
+        this.setState({
+          signedIn: true,
+          name: result.user.name,
+          photoUrl: result.user.photoUrl
+        })
+      } else {
+        console.log("cancelled")
+      }
+    } catch (e) {
+      console.log("error", e)
+    }
+  }
+  render() {
+    return (
       <View style={styles.container}>
-        <View style={styles.container}>
-          {/*Running GET Request*/}
-          <TouchableOpacity
-            style={styles.buttonStyle}
-            onPress={getDataProfile}>
-            <Text style={styles.textStyle}>
-              Get status PROFILING CORE
-            </Text>
-          </TouchableOpacity>
-          {/*Running POST Request*/}
-          <TouchableOpacity
-            style={styles.buttonStyle}
-            onPress={getDataBusinessCore}>
-            <Text style={styles.textStyle}>
-              Get status BUSINESS CORE
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <Text
-          style={{
-            fontSize: 18,
-            textAlign: 'center',
-            color: 'grey'
-          }}>
-          Marche ese AirBnB
-          {'\n'}
-          Checkpoint 1 - Taller II
-        </Text>
-        <Text
-          style={{
-            fontSize: 16,
-            textAlign: 'center',
-            color: 'grey'
-          }}>
-          Number One Group
-        </Text>
+        {this.state.signedIn ? (
+          <LoggedInPage name={this.state.name} photoUrl={this.state.photoUrl} />
+        ) : (
+          <LoginPage signIn={this.signIn} />
+        )}
       </View>
-    </SafeAreaView>
-  );
-};
+    )
+  }
+}
+
+const LoginPage = props => {
+  return (
+    <View>
+      <Text style={styles.header}>Sign In With Google</Text>
+      <Button title="Sign in with Google" onPress={() => props.signIn()} />
+    </View>
+  )
+}
+
+const LoggedInPage = props => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>Welcome:{props.name}</Text>
+      <Image style={styles.image} source={{ uri: props.photoUrl }} />
+    </View>
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    padding: 20,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center"
   },
-  textStyle: {
-    fontSize: 18,
-    color: 'white',
+  header: {
+    fontSize: 25
   },
-  buttonStyle: {
-    alignItems: 'center',
-    backgroundColor: 'black',
-    padding: 10,
-    marginVertical: 10,
-  },
-});
-
-export default App;
+  image: {
+    marginTop: 15,
+    width: 150,
+    height: 150,
+    borderColor: "rgba(0,0,0,0.2)",
+    borderWidth: 3,
+    borderRadius: 150
+  }
+})
