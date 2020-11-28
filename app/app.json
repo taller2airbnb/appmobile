@@ -1,3 +1,9 @@
 {
-  "name": "main"  
+  "name": "main",
+  "extra": {
+    "loginEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/login",
+    "registerEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/register",
+    "googleProfileEndpoint": "https://www.googleapis.com/auth/userinfo.profile",
+    "androidClientId": "266504353107-usdo5g4iii624bn9hrpo7aaa1t7qeh33.apps.googleusercontent.com"
+  }
 }
