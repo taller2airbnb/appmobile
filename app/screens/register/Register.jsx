@@ -1,7 +1,8 @@
 import { Container, Header, Title, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text, Form, Item, Input, Picker, View } from 'native-base';
-
+import {Alert} from 'react-native';
 import React from "react";
 import * as Google from 'expo-google-app-auth';
+import Constants from 'expo-constants';
 
 export default class Register extends React.Component {
     constructor(props) {
@@ -18,7 +19,7 @@ export default class Register extends React.Component {
                 profile: 2
             },
           error: ''
-        }
+        }        
       }
 
   handleInputChange = (event, property) => {
@@ -51,18 +52,16 @@ export default class Register extends React.Component {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(this.state.formData)
+      body: JSON.stringify({...this.state.formData, google_token: '', user_type: 'bookbnb'})
     };
 
-    let response = await fetch('https://taller2airbnb-profile.herokuapp.com/register/', requestOptions);
+    let response = await fetch(Constants.manifest.extra.registerEndpoint, requestOptions);
     
     if(response.status == 200){
-        let json = await response.json();
-        this.props.screenProps.handleLogIn(json);
-        this.props.navigation.navigate('Home');
+        this.props.navigation.navigate('Login', {alertMessage: 'Registered Successfully'});        
     }else{
         let json = await response.json();
-        this.setState({error: json.Error ?? json.error})
+        this.setState({error: json.message ?? 'Oops! Something went wrong.'})
     }
     
   }
@@ -72,25 +71,23 @@ export default class Register extends React.Component {
     try {
         const result = await Google.logInAsync({
           androidClientId:
-          "266504353107-usdo5g4iii624bn9hrpo7aaa1t7qeh33.apps.googleusercontent.com",
-          scopes: ["https://www.googleapis.com/auth/userinfo.profile", "email"]
+          Constants.manifest.extra.androidClientId,
+          scopes: [Constants.manifest.extra.googleProfileEndpoint, "email"]
         })
         
         if (result.type === "success") {
           const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({token: result.accessToken, profile: this.state.formData.profile})
+            body: JSON.stringify({google_token: result.accessToken, profile: this.state.formData.profile, user_type:'googleuser'})
           };
       
-          let response = await fetch('https://taller2airbnb-profile.herokuapp.com/google_auth/register', requestOptions);
+          let response = await fetch(Constants.manifest.extra.registerEndpoint, requestOptions);
           if(response.status == 200){
-            let json = await response.json();
-            this.props.screenProps.handleLogIn(json);
-            this.props.navigation.navigate('Home');
+            this.props.navigation.navigate('Login', {alertMessage: 'Registered Successfully'});
         }else{
             let json = await response.json();
-            this.setState({error: json.Error ?? json.error})
+            this.setState({error: json.message ?? 'Oops! Something went wrong.'});
         }   
         } else {
             this.setState({error: 'Google Authentication Failed'})
@@ -149,8 +146,8 @@ export default class Register extends React.Component {
               selectedValue={this.state.formData.profile}
               onValueChange={this.onValueChange.bind(this)}
             >
-              <Picker.Item label="Guest" value="2" />
-              <Picker.Item label="Host" value="1" />
+              <Picker.Item label="Guest" value={2} />
+              <Picker.Item label="Host" value={1} />
             </Picker>
           </Form>
           {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
