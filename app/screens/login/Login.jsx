@@ -3,6 +3,8 @@ import { Container, Header, Title, Content, Footer, FooterTab, Button, Left, Rig
 import React from "react";
 import * as Google from 'expo-google-app-auth';
 import { color } from 'react-native-reanimated';
+import Constants from 'expo-constants';
+import {Alert} from 'react-native';
 
 export default class Login extends React.Component {
     constructor(props) {
@@ -24,44 +26,54 @@ export default class Login extends React.Component {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({email: this.state.email, password: this.state.password})
+      body: JSON.stringify({email: this.state.email, password: this.state.password, google_roken: '', user_type: 'bookbnb'})
   };
 
-    let response = await fetch('https://taller2airbnb-profile.herokuapp.com/login/', requestOptions);
+    let response = await fetch(Constants.manifest.extra.loginEndpoint, requestOptions);
      
     if(response.status == 200){
-      let json = await response.json();
-      this.props.screenProps.handleLogIn(json);
+      let json = await response.json();      
+      this.props.screenProps.handleLogIn({...json.message, accessToken: json.token});
       this.props.navigation.navigate('Home');
       }else{
       let json = await response.json();
-      this.setState({error: json.Error ?? json.error})
+      this.setState({error: json.message ?? 'Oops! Something went wrong.'})
   }
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot){
+    if(prevProps.navigation !== this.props.navigation){
+      if(this.props.navigation.getParam('alertMessage')){
+        Alert.alert(this.props.navigation.getParam('alertMessage'))
+        this.props.navigation.setParams({alertMessage: ''})
+      }
+      
+    }    
   }
 
   signInWithGoogle = async () => {
     try {
       const result = await Google.logInAsync({
         androidClientId:
-        "266504353107-usdo5g4iii624bn9hrpo7aaa1t7qeh33.apps.googleusercontent.com",
-        scopes: ["https://www.googleapis.com/auth/userinfo.profile", "email"]
+        Constants.manifest.extra.androidClientId,
+        scopes: [Constants.manifest.extra.googleProfileEndpoint, "email"]
       })
       
       if (result.type === "success") {
         const requestOptions = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({token: result.accessToken})
+          body: JSON.stringify({email: '', password: '', google_roken: result.accessToken, user_type: 'googleuser'})
         };
     
-        let response = await fetch('https://taller2airbnb-profile.herokuapp.com/google_auth/login', requestOptions);
+        let response = await fetch(Constants.manifest.extra.loginEndpoint, requestOptions);
         if(response.status == 200){
           let json = await response.json();
-          this.props.screenProps.handleLogIn(json);
+          this.props.screenProps.handleLogIn({...json.message, accessToken: json.token});
           this.props.navigation.navigate('Home');
       }else{
           let json = await response.json();
-          this.setState({error: json.Error ?? json.error})
+          this.setState({error: json.message ?? 'Oops! Something went wrong.'})
       }    
       } else {
         this.setState({error: 'Google authentication failed'})
