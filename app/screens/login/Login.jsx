@@ -5,6 +5,7 @@ import * as Google from 'expo-google-app-auth';
 import { color } from 'react-native-reanimated';
 import Constants from 'expo-constants';
 import {Alert} from 'react-native';
+import {post} from '../../api/ApiHelper'
 
 export default class Login extends React.Component {
     constructor(props) {
@@ -22,14 +23,9 @@ export default class Login extends React.Component {
     this.setState(newState);
   }
 
-   signIn = async() => {
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({email: this.state.email, password: this.state.password, google_roken: '', user_type: 'bookbnb'})
-  };
-
-    let response = await fetch(Constants.manifest.extra.loginEndpoint, requestOptions);
+   signIn = async() => {    
+    const body = {email: this.state.email, password: this.state.password, google_roken: '', user_type: 'bookbnb'}
+    let response = await post(Constants.manifest.extra.loginEndpoint, body)
      
     if(response.status == 200){
       let json = await response.json();      
