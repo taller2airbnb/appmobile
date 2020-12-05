@@ -28,6 +28,12 @@ const datas = [
     bg: "#C5F442",
     profiles:[0,1]
   },
+  {
+    name: "Search Postings",
+    route: "PostingSearch",
+    bg: "#C5F442",
+    profiles:[0,2]
+  },
 ];
 
 class SideBar extends Component {
