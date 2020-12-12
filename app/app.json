@@ -5,6 +5,7 @@
     "registerEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/register",
     "googleProfileEndpoint": "https://www.googleapis.com/auth/userinfo.profile",
     "featuresEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/feature",
+    "profileEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/user",
     "postingEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/posting",
     "androidClientId": "266504353107-usdo5g4iii624bn9hrpo7aaa1t7qeh33.apps.googleusercontent.com"
   }
