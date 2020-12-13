@@ -12,6 +12,7 @@ import Register from "../screens/register/Register"
 import SideBar from "../screens/sidebar/Sidebar";
 import PostingSearch from "../screens/posting/PostingSearch";
 import MyProfile from "../screens/profile/MyProfile";
+import EditProfile from "../screens/profile/EditProfile";
 
 const Drawer = createDrawerNavigator(
   {
@@ -20,7 +21,8 @@ const Drawer = createDrawerNavigator(
     MyPostings: {screen: MyPostings},
     Login:  {screen: Login},
     PostingSearch: {screen: PostingSearch},
-    MyProfile: {screen: MyProfile}
+    MyProfile: {screen: MyProfile},
+    EditProfile: {screen: EditProfile}
   },
   {
     initialRouteName: "Login",
@@ -39,7 +41,8 @@ const AppNavigator = createStackNavigator(
     Posting: {screen: Posting},
     MyPostings: {screen: MyPostings},
     PostingSearch: {screen: PostingSearch},
-    MyProfile: {screen: MyProfile}
+    MyProfile: {screen: MyProfile},
+    EditProfile: {screen: EditProfile}
   },
   {
     initialRouteName: "Drawer",
