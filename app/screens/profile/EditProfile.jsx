@@ -1,7 +1,7 @@
 import { Container, Header, Title, Content, Body, Text, Button, View, Form, Item, H3, Input } from 'native-base';
 import React from "react";
 import Constants from 'expo-constants';
-import {post, get} from '../../api/ApiHelper';
+import {put, get} from '../../api/ApiHelper';
 
 export default class EditProfile extends React.Component {
     constructor(props) {
@@ -12,7 +12,6 @@ export default class EditProfile extends React.Component {
             formData: {
               //first_name: "",
               //last_name: "",
-              //id: "",
               //national_id_type: "",
               //national_id: ""
             },
@@ -38,33 +37,7 @@ export default class EditProfile extends React.Component {
           this.setState({error: json.message ?? 'Oops! Something went wrong.'});
         }   
       }
-      
-    editProfile = async() => {
-        this.setState({error: ''})
-        //if(!this.validForm()){
-        //  return;
-        //}
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({...this.state.formData, google_token: '', user_type: 'bookbnb'})
-        };
     
-        let response = await fetch(Constants.manifest.extra.profileEndpoint, requestOptions);
-        
-        if(response.status == 200){
-            this.props.navigation.navigate('Login', {alertMessage: 'Profile edited Successfully'});        
-        }else{
-            let json = await response.json();
-            this.setState({error: json.message ?? 'Oops! Something went wrong.'})
-        }
-      
-    }
-
-    setFormData = async() => {
-        this.setState({testName: "bobo"})
-    }
-
     handleInputChange = (event, property) => {
         let newState = { ...this.state};
         newState.formData[property] = event.nativeEvent.text;
@@ -72,8 +45,8 @@ export default class EditProfile extends React.Component {
     }
 
     validForm(){
-        if(isNaN(this.state.formData.national_id)){
-            this.setState({error: 'National id must be a number.'})
+        if((this.state.formData.national_id) && (isNaN(this.state.formData.national_id))){
+            this.setState({error: 'National ID must be a number.'})
             return false;
         }
         return true;
@@ -82,23 +55,16 @@ export default class EditProfile extends React.Component {
     edit = async() => {
         this.setState({error: ''})
         if(!this.validForm()){
-          return;
+            return;
         }
-        //const requestOptions = {
-        //  method: 'POST',
-        //  headers: { 'Content-Type': 'application/json' },
-        //  body: JSON.stringify({...this.state.formData, google_token: '', user_type: 'bookbnb'})
-        //};
-    
-        //let response = await fetch(Constants.manifest.extra.registerEndpoint, requestOptions);
-        
-        //if(response.status == 200){
-        //    this.props.navigation.navigate('Login', {alertMessage: 'Registered Successfully'});        
-        //}else{
-        //    let json = await response.json();
-        //    this.setState({error: json.message ?? 'Oops! Something went wrong.'})
-        //}
-        {() => this.props.navigation.navigate("MyProfile")}
+        const body = JSON.stringify({...this.state.formData})
+        let response = await put(Constants.manifest.extra.profileEndpoint, body, this.props.screenProps.user.accessToken);
+        if(response.status == 200){
+            this.props.navigation.navigate('MyProfile', {alertMessage: 'Changes saved successfully.'});        
+        }else{
+            let json = await response.json();
+            this.setState({error: json.message ?? 'Oops! Something went wrong.'})
+        }
     }
     
 
@@ -119,10 +85,6 @@ export default class EditProfile extends React.Component {
                         <H3 style={{marginTop:20, marginLeft: 10}}>Last Name:</H3>
                         <Item>
                             <Input placeholder={this.state.profile.last_name} onChange={ (e) => this.handleInputChange(e, 'last_name')}/>
-                        </Item>
-                        <H3 style={{marginTop:20, marginLeft: 10}}>User Name:</H3>
-                        <Item>
-                            <Input placeholder={this.state.profile.alias} onChange={ (e) => this.handleInputChange(e, 'alias')}/>
                         </Item>
                         <H3 style={{marginTop:20, marginLeft: 10}}>National ID Type:</H3>
                         <Item>
@@ -148,7 +110,6 @@ export default class EditProfile extends React.Component {
                     </Button>
                     <Text>First name: {this.state.formData.first_name}</Text>
                     <Text>Last name: {this.state.formData.last_name}</Text>
-                    <Text>User name: {this.state.formData.alias}</Text>
                     <Text>Document: {this.state.formData.national_id_type} {this.state.formData.national_id}</Text>
                 </Body>
             </Content>

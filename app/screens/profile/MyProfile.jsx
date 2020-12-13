@@ -2,6 +2,7 @@ import { Container, Header, Title, Content, Body, Text, Button, View } from 'nat
 import React from "react";
 import Constants from 'expo-constants';
 import {get} from '../../api/ApiHelper';
+import {Alert} from 'react-native';
 
 export default class MyProfile extends React.Component {
   constructor(props) {
@@ -30,6 +31,18 @@ export default class MyProfile extends React.Component {
       this.setState({error: json.message ?? 'Oops! Something went wrong.'});
       }   
   }
+
+  
+  componentDidUpdate(prevProps, prevState, snapshot){
+    if(prevProps.navigation !== this.props.navigation){
+      if(this.props.navigation.getParam('alertMessage')){
+        Alert.alert(this.props.navigation.getParam('alertMessage'))
+        this.props.navigation.setParams({alertMessage: ''})
+      }
+      
+    }    
+  }
+
 
   render() {
     return <Container>
