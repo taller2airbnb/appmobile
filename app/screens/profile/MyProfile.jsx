@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Body, Text, Button, View } from 'native-base';
+import { Container, Header, Title, Content, Body, Text, Button, View, H3 } from 'native-base';
 import React from "react";
 import Constants from 'expo-constants';
 import {get} from '../../api/ApiHelper';
@@ -56,11 +56,16 @@ export default class MyProfile extends React.Component {
           {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
             <Text style={{color:'red'}}>{this.state.error}</Text>
           </View>}
-          <Text>Name: {this.state.profile.first_name} {this.state.profile.last_name}</Text>
-          <Text>Username: {this.state.profile.alias}</Text>
-          <Text>Email: {this.state.profile.email} </Text>
-          <Text>Document: {this.state.profile.national_id_type} {this.state.profile.national_id}</Text>
-                     
+          <H3 style={{marginTop:20, marginLeft: 10}}>Name</H3>
+          <Text>{this.state.profile.first_name} {this.state.profile.last_name}</Text>
+          <H3 style={{marginTop:20, marginLeft: 10}}>Username</H3>
+          <Text>{this.state.profile.alias}</Text>
+          <H3 style={{marginTop:20, marginLeft: 10}}>Email</H3>
+          <Text>{this.state.profile.email}</Text>
+          <H3 style={{marginTop:20, marginLeft: 10}}>Document Id</H3>
+          <Text>{this.state.profile.national_id_type} {this.state.profile.national_id}</Text>
+          <Text></Text>
+          <Text></Text>
           <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={() => this.props.navigation.navigate("EditProfile")}>
             <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Edit profile</Text>

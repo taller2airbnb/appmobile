@@ -10,10 +10,10 @@ export default class EditProfile extends React.Component {
             email: this.props.screenProps.user.email,
             profile: {},
             formData: {
-              //first_name: "",
-              //last_name: "",
-              //national_id_type: "",
-              //national_id: ""
+                //first_name: "",
+                //last_name: "",
+                //national_id_type: "",
+                //national_id: ""
             },
             error: '', 
             id: 0,
@@ -30,6 +30,7 @@ export default class EditProfile extends React.Component {
             if (json.message.users[i].email == this.props.screenProps.user.email){
                 this.setState({profile: json.message.users[i]})
                 this.setState({id: i})
+                this.setState({formData:{id: i}})
             }
           }
         }else{
@@ -57,8 +58,9 @@ export default class EditProfile extends React.Component {
         if(!this.validForm()){
             return;
         }
-        const body = JSON.stringify({...this.state.formData})
-        let response = await put(Constants.manifest.extra.profileEndpoint, body, this.props.screenProps.user.accessToken);
+        //this.setState({formData,id: this.state.profile.id})
+        const body = {...this.state.formData}
+        let response = await put(Constants.manifest.extra.profileEndpoint, body, this.props.screenProps.user.accessToken)
         if(response.status == 200){
             this.props.navigation.navigate('MyProfile', {alertMessage: 'Changes saved successfully.'});        
         }else{
@@ -108,9 +110,6 @@ export default class EditProfile extends React.Component {
                             <Text style={{color:'white'}}>Return to profile</Text>
                         </View>
                     </Button>
-                    <Text>First name: {this.state.formData.first_name}</Text>
-                    <Text>Last name: {this.state.formData.last_name}</Text>
-                    <Text>Document: {this.state.formData.national_id_type} {this.state.formData.national_id}</Text>
                 </Body>
             </Content>
         </Container>;
