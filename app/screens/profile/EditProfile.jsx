@@ -2,6 +2,7 @@ import { Container, Header, Title, Content, Body, Text, Button, View, Form, Item
 import React from "react";
 import Constants from 'expo-constants';
 import {put, get} from '../../api/ApiHelper';
+import {NavigationEvents} from 'react-navigation';
 
 export default class EditProfile extends React.Component {
     constructor(props) {
@@ -22,23 +23,29 @@ export default class EditProfile extends React.Component {
 
     //obtengo datos del perfil para los defaults del form
     async componentDidMount(){
+        this.getProfile()
+    }
+    
+    async getProfile(){
         let profileResponse = await get(Constants.manifest.extra.profileEndpoint, this.props.screenProps.user.accessToken)
+        
         if(profileResponse.status == 200){
-          let json = await profileResponse.json();          
-          //busco el perfil cuyo mail matchee con el mio
-          for (var i = 0; i < json.message.users.length; i++){
-            if (json.message.users[i].email == this.props.screenProps.user.email){
-                this.setState({profile: json.message.users[i]})
-                this.setState({id: i})
-                this.setState({formData:{id: i}})
+            let json = await profileResponse.json(); 
+            busco el perfil cuyo mail matchee con el mio
+            for (var i = 0; i < json.message.users.length; i++){
+                if (json.message.users[i].email == this.props.screenProps.user.email){
+                    this.setState({profile: json.message.users[i]})
+                    this.setState({id: i})
+                    this.setState({formData:{id: i}})
+                }
             }
-          }
         }else{
           let json = await profileResponse.json();
           this.setState({error: json.message ?? 'Oops! Something went wrong.'});
-        }   
-      }
-    
+        } 
+    }
+
+
     handleInputChange = (event, property) => {
         let newState = { ...this.state};
         newState.formData[property] = event.nativeEvent.text;
@@ -72,6 +79,7 @@ export default class EditProfile extends React.Component {
 
     render() {
         return <Container>
+            <NavigationEvents onDidFocus={() => this.getProfile()} />
             <Header>
                 <Body style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                     <Title>Edit Profile</Title>

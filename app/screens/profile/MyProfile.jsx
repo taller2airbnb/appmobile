@@ -3,6 +3,7 @@ import React from "react";
 import Constants from 'expo-constants';
 import {get} from '../../api/ApiHelper';
 import {Alert} from 'react-native';
+import {NavigationEvents} from 'react-navigation';
 
 export default class MyProfile extends React.Component {
   constructor(props) {
@@ -11,11 +12,16 @@ export default class MyProfile extends React.Component {
       email: this.props.screenProps.user.email,
       profile: {},
       error: '', 
-      id: 0
+      id: "cargando",
       }        
   }
 
   async componentDidMount(){
+    this.getProfile();
+  }
+
+
+  async getProfile(){
     let profileResponse = await get(Constants.manifest.extra.profileEndpoint, this.props.screenProps.user.accessToken)
     if(profileResponse.status == 200){
       let json = await profileResponse.json();          
@@ -24,15 +30,16 @@ export default class MyProfile extends React.Component {
         if (json.message.users[i].email == this.props.screenProps.user.email){
           this.setState({profile: json.message.users[i]})
           this.setState({id: i})
+          this.setState({length: json.message.users.length})
           }
       }
     }else{
       let json = await profileResponse.json();
       this.setState({error: json.message ?? 'Oops! Something went wrong.'});
-      }   
+    } 
   }
-
   
+
   componentDidUpdate(prevProps, prevState, snapshot){
     if(prevProps.navigation !== this.props.navigation){
       if(this.props.navigation.getParam('alertMessage')){
@@ -46,6 +53,7 @@ export default class MyProfile extends React.Component {
 
   render() {
     return <Container>
+      <NavigationEvents onDidFocus={() => this.getProfile()} />
       <Header>
       <Body style={{flex:1,justifyContent: "center",alignItems: "center"}}>
         <Title>My Profile</Title>
