@@ -19,7 +19,7 @@ export default class PostingSearch extends React.Component {
           currentDate: new Date(),
           error: '',
           fetching: true
-        }       
+        }        
       }
 
       async componentDidMount(){
@@ -43,6 +43,10 @@ export default class PostingSearch extends React.Component {
         }        
       }
 
+      goToBooking(id){
+        this.props.navigation.navigate('Booking', {postingId: id});
+      }
+
   render() {
     return <Container>
         <Header>
@@ -54,12 +58,12 @@ export default class PostingSearch extends React.Component {
             { this.state.fetching && <Spinner color='blue' />}
             { !this.state.fetching && this.state.postings.map((posting,index) => (
              <ListItem key={'posting-' + posting.id_posting} button 
-            onPress={() => {}}>
+            onPress={()=> this.goToBooking(posting.id_posting)}>
             <Card style={{flex: 1}}>
             <CardItem style={{flex: 1}}>
               <Left>                
                 <Body>
-                  <Text>Posting Name</Text>
+                  <Text>{posting.name}</Text>
                   <Text note>Available up to {posting.end_date}</Text>
                 </Body>
               </Left>
