@@ -121,25 +121,21 @@ export default class Booking extends React.Component {
         });
       }
 
-      createBooking = async() => {
-
-        const features = this.state.possibleFeatures.filter(f => f.value).map(x=> x.id_feature).join(',');
-        const data = {...this.state.formData, features: features}
-        let response = await post(Constants.manifest.extra.postingEndpoint, data, this.props.screenProps.user.accessToken)
+      createBooking = async() => {        
+        const data = {idPosting: this.state.posting.id_posting, initialDate: this.state.formData.start_date, lastDate: this.state.formData.end_date}        
+        let response = await post(Constants.manifest.extra.intentBookingEndpoint, data, this.props.screenProps.user.accessToken)
         if(response.status == 200){
           Alert.alert(
             "Booking Created Successfully",
             "",
             [              
-              { text: "OK", onPress: () => this.navigateToMybookings() }
+              { text: "OK", onPress: () => this.navigateToMybookings }
             ],
             { cancelable: false }
-          );
-          this.props.navigation.navigate('MyPostings')
+          );          
         }else{
           let json = await response.json();
           Alert.alert(json.message ?? 'Oops! Something went wrong.')
-          //this.setState({error: json.message ?? 'Oops! Something went wrong.'});
         } 
       }
 
