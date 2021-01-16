@@ -8,5 +8,10 @@
     "postingEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/posting",
     "androidClientId": "266504353107-usdo5g4iii624bn9hrpo7aaa1t7qeh33.apps.googleusercontent.com",
     "intentBookingEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/intentBooking"
+  },
+  "android": {
+    "package": "bookbnb.degoasedition",
+    "googleServicesFile": "./google-services.json",
+    "versionCode": 1
   }
 }
