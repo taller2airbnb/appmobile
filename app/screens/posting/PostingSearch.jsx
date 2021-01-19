@@ -5,6 +5,8 @@ import Constants from 'expo-constants';
 import {get, toQueryParams} from '../../api/ApiHelper';
 import moment from 'moment';
 import { Image } from 'react-native';
+import * as Location from 'expo-location';
+import  * as Permissions from 'expo-permissions';
 
 const postingImage = require("../../assets/degoas.png");
 
@@ -29,7 +31,8 @@ export default class PostingSearch extends React.Component {
         this.setEndDate = this.setEndDate.bind(this);
         this.setStartDate = this.setStartDate.bind(this);
         this.toggleCheckbox = this.toggleCheckbox.bind(this);
-        this.applyFilters = this.applyFilters.bind(this);       
+        this.applyFilters = this.applyFilters.bind(this);    
+        this.getNearbyPostings = this.getNearbyPostings.bind(this);   
       }
 
       async componentDidMount(){
@@ -51,6 +54,39 @@ export default class PostingSearch extends React.Component {
           let json = await postingsResponse.json();
           this.setState({error: json.message ?? 'Sorry. Could not retrieve postings.'});
         }        
+      }
+
+      async requestLocationPermissions(){
+        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+        if (status !== 'granted') {          
+          return false;
+        }        
+        return true;
+      }      
+
+      async getNearbyPostings(){
+        let perms = await this.requestLocationPermissions();
+        if(perms){
+          let location = await Location.getCurrentPositionAsync().catch(function() {
+            Alert.alert('Could not retrieve Location');
+          });
+          if(location){            
+            this.setState({fetching: true})
+            this.setState({activeTab: 'results'});
+            let params = toQueryParams({MyLatitude: location.coords.latitude, MyLongitude: location.coords.longitude, numberPostings: 10});
+            let postingsResponse = await get(Constants.manifest.extra.postingEndpoint + '/nearbyHotels' + params, this.props.screenProps.user.accessToken)
+        if(postingsResponse.status == 200){
+          let json = await postingsResponse.json();
+          this.setState({postings: json.message})
+          this.setState({fetching: false})
+        }else{
+          let json = await postingsResponse.json();
+          this.setState({error: json.message ?? 'Sorry. Could not retrieve postings.'});
+        }
+          }else{
+            Alert.alert('Could not retrieve Location');
+          }
+        }
       }
 
       goToBooking(id){
@@ -171,9 +207,16 @@ export default class PostingSearch extends React.Component {
         <Item>
               <Input label='Max Price per day' placeholder="Max Price (ETH)" keyboardType='numeric' onChange={ (e) => this.handlePriceChange(e, 'priceMax')}/>
         </Item>
-        <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={this.applyFilters}>
+        
+        <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:10, width:200 }}onPress={this.applyFilters}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Apply Filters</Text>
+            </View>
+          </Button>
+
+          <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:10, width:200 }}onPress={this.getNearbyPostings}>
+          <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+              <Text style={{color:'white'}}>Hosts Near Me</Text>
             </View>
           </Button>
           </Content>

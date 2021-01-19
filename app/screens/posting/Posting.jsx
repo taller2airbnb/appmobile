@@ -16,6 +16,7 @@ export default class Posting extends React.Component {
                 start_date: '',
                 end_date: '',                
                 public: true,
+                state:'',
                 content: "",
                 name: '',
                 latitude: 0,
