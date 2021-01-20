@@ -1,5 +1,6 @@
 {
-  "name": "main",
+  "name": "BookBnB",
+  "description": "App to book stuff",
   "extra": {
     "loginEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/login",
     "registerEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/register",
