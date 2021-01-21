@@ -34,6 +34,12 @@ const datas = [
     bg: "#C5F442",
     profiles:[0,2]
   },
+  {
+    name: "My Bookings",
+    route: "MyBookings",
+    bg: "#C5F442",
+    profiles:[0,2]
+  },
 ];
 
 class SideBar extends Component {

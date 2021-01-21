@@ -8,6 +8,7 @@ import { createStackNavigator } from "react-navigation-stack";
 import Login from "../screens/login/Login";
 import Posting from "../screens/posting/Posting";
 import MyPostings from "../screens/myPostings/MyPostings";
+import MyBookings from "../screens/booking/MyBookings";
 import Home from "../screens/home/Home";
 import Register from "../screens/register/Register"
 import SideBar from "../screens/sidebar/Sidebar";
@@ -21,6 +22,7 @@ const Drawer = createDrawerNavigator(
     Home: { screen: Home },
     Posting: {screen: Posting},
     MyPostings: {screen: MyPostings},
+    MyBookings: {screen: MyBookings},
     Login:  {screen: Login},
     PostingSearch: {screen: PostingSearch},
     Booking: {screen: Booking}
@@ -41,6 +43,7 @@ const AppNavigator = createStackNavigator(
     Register: {screen: Register},
     Posting: {screen: Posting},
     MyPostings: {screen: MyPostings},
+    MyBookings: {screen: MyBookings},
     PostingSearch: {screen: PostingSearch},
     Booking: {screen: Booking}
   },
