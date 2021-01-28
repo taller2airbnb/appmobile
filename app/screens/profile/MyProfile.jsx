@@ -75,7 +75,7 @@ export default class MyProfile extends React.Component {
             <Col><H3 style={{marginTop:10, marginLeft: 30, marginBottom:10}}>Document Id</H3></Col>
             <Col><Text style={{marginTop:7}}>{this.state.profile.national_id_type} {this.state.profile.national_id}</Text></Col>
           </Row>
-          <Text>{this.props.screenProps.user.id}</Text>
+          <Text></Text>
           <Text></Text>
           <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={() => this.props.navigation.navigate("EditProfile")}>
             <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
