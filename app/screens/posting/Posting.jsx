@@ -5,6 +5,7 @@ import * as Google from 'expo-google-app-auth';
 import Constants from 'expo-constants';
 import {post, get} from '../../api/ApiHelper';
 import moment from 'moment';
+import CountryDropdown from '../../components/CountryDropdown';
 
 export default class Posting extends React.Component {
     constructor(props) {
@@ -13,12 +14,16 @@ export default class Posting extends React.Component {
             formData: {
                 price_day: 0,
                 start_date: '',
-                end_date: '',
-                state: "",
+                end_date: '',                
                 public: true,
+                state:'',
                 content: "",
-                address: '',
-                name: ''
+                name: '',
+                latitude: 0,
+                longitude:0,
+                country:'Argentina',
+                city: '',
+                max_number_guests: 1
             },
           possibleFeatures: [],
           startDate: new Date(),
@@ -31,6 +36,7 @@ export default class Posting extends React.Component {
         this.toggleCheckbox = this.toggleCheckbox.bind(this);
         this.createPosting = this.createPosting.bind(this);
         this.navigateToMyPostings = this.navigateToMyPostings.bind(this);
+        this.onCountryChange = this.onCountryChange.bind(this);
       }
 
       async componentDidMount(){
@@ -54,9 +60,9 @@ export default class Posting extends React.Component {
         this.setState(newState);
       }
 
-      handlePriceChange = (event) => {
+      handleNumberChange = (event, property) => {
         let newState = { ...this.state};
-        newState.formData.price_day = Number(event.nativeEvent.text);
+        newState.formData[property] = Number(event.nativeEvent.text);
         this.setState(newState);
       }
 
@@ -76,9 +82,9 @@ export default class Posting extends React.Component {
         //this.setState({ endDate: newDate });
       }
     
-      onValueChange(value) {
+      onCountryChange(value) {
         let newState = { ...this.state};
-        newState.formData.profile = value;
+        newState.formData.country = value;
         this.setState({
             newState
         });
@@ -129,14 +135,26 @@ export default class Posting extends React.Component {
               <Input placeholder="Description" onChange={ (e) => this.handleInputChange(e, 'content')}/>
             </Item>
             <Item>
-              <Input placeholder="Country" onChange={ (e) => this.handleInputChange(e, 'state')}/>
-            </Item>     
+              <CountryDropdown placeholder="Country" selected={this.state.formData.country} onValueChange={this.onCountryChange}/>
+            </Item>
             <Item>
-              <Input placeholder="Address" onChange={ (e) => this.handleInputChange(e, 'address')}/>
+              <Input placeholder="City" onChange={ (e) => this.handleInputChange(e, 'city')}/>
+            </Item>
+            <H3 style={{marginTop:20, marginLeft: 10}}>Location Latitude</H3>
+            <Item>
+              <Input label='Latitude' placeholder="Latitude" keyboardType='numeric' onChange={ (e) => this.handleNumberChange(e, 'latitude')}/>
+            </Item>
+            <H3 style={{marginTop:20, marginLeft: 10}}>Location Longitude</H3>
+            <Item>
+              <Input label='Longitude' placeholder="Longitude" keyboardType='numeric' onChange={ (e) => this.handleNumberChange(e, 'longitude')}/>
+            </Item>
+            <H3 style={{marginTop:20, marginLeft: 10}}>Maximum Number of Guests</H3>
+            <Item>
+              <Input label='Number Of Guests' placeholder="Number Of Guests" keyboardType='numeric' onChange={ (e) => this.handleNumberChange(e, 'max_number_guests')}/>
             </Item>
             <H3 style={{marginTop:20, marginLeft: 10}}>Provide Price Per Day (ETH):</H3>
             <Item>
-              <Input label='Price per day' placeholder="ETH" keyboardType='numeric' onChange={ (e) => this.handlePriceChange(e)}/>
+              <Input label='Price per day' placeholder="ETH" keyboardType='numeric' onChange={ (e) => this.handleNumberChange(e, 'price_day')}/>
             </Item> 
         <H3 style={{marginTop:20, marginLeft: 10}}>Posting validity period:</H3>
         <Content padder style={{ backgroundColor: "#fff" }}>
