@@ -71,7 +71,8 @@ export default class Register extends React.Component {
     try {
         const result = await Google.logInAsync({
           androidClientId:
-          Constants.manifest.extra.androidClientId,
+          Constants.manifest.extra.androidStandAloneClientId,
+          androidStandaloneAppClientId: Constants.manifest.extra.androidStandAloneClientId,
           scopes: [Constants.manifest.extra.googleProfileEndpoint, "email"]
         })
         

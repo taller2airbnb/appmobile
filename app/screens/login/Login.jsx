@@ -24,7 +24,7 @@ export default class Login extends React.Component {
   }
 
    signIn = async() => {    
-    const body = {email: this.state.email, password: this.state.password, google_roken: '', user_type: 'bookbnb'}
+    const body = {email: this.state.email, password: this.state.password, google_token: '', user_type: 'bookbnb'}
     let response = await post(Constants.manifest.extra.loginEndpoint, body)
      
     if(response.status == 200){
@@ -51,7 +51,8 @@ export default class Login extends React.Component {
     try {
       const result = await Google.logInAsync({
         androidClientId:
-        Constants.manifest.extra.androidClientId,
+        Constants.manifest.extra.androidStandAloneClientId,
+        androidStandaloneAppClientId: Constants.manifest.extra.androidStandAloneClientId,
         scopes: [Constants.manifest.extra.googleProfileEndpoint, "email"]
       })
       
@@ -59,7 +60,7 @@ export default class Login extends React.Component {
         const requestOptions = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({email: '', password: '', google_roken: result.accessToken, user_type: 'googleuser'})
+          body: JSON.stringify({email: '', password: '', google_token: result.accessToken, user_type: 'googleuser'})
         };
     
         let response = await fetch(Constants.manifest.extra.loginEndpoint, requestOptions);
