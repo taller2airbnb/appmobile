@@ -1,5 +1,6 @@
 {
-  "name": "main",
+  "name": "BookBnB",
+  "description": "App to book stuff",
   "extra": {
     "loginEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/login",
     "registerEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/register",
@@ -7,8 +8,20 @@
     "featuresEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/feature",
     "postingEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/posting",
     "androidClientId": "266504353107-usdo5g4iii624bn9hrpo7aaa1t7qeh33.apps.googleusercontent.com",
+    "androidStandAloneClientId": "266504353107-r4ft0ndal69f4cvhqudauo3s0ojgajp9.apps.googleusercontent.com",
     "intentBookingEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/intentBooking",
     "myBookingsEndpoint":"https://taller2airbnb-businesscore.herokuapp.com/myBookings",
     "myBookingIntentsEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/myBookingIntents"
+  },
+  "android": {
+    "package": "bookbnb.degoasedition",
+    "googleServicesFile": "./google-services.json",
+    "versionCode": 1,
+    "config":{
+      "googleSignIn": {
+        "apiKey": "AIzaSyBkpbUDwNrN9r3ptM6dB6lYgL9vH79Z1e4",
+        "certificateHash": "5578793ACA20545F533DF775E76AD93A9EE6DE51"
+      }
+    }
   }
 }
