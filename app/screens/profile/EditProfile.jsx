@@ -27,24 +27,18 @@ export default class EditProfile extends React.Component {
     }
     
     async getProfile(){
-        let profileResponse = await get(Constants.manifest.extra.profileEndpoint, this.props.screenProps.user.accessToken)
-        
+        let endpoint = Constants.manifest.extra.profileEndpoint + '/' + this.props.screenProps.user.id
+        let profileResponse = await get(endpoint, this.props.screenProps.user.accessToken)
         if(profileResponse.status == 200){
-            let json = await profileResponse.json(); 
-            let myList = json.message.users
-            myList.sort((a,b) => (a.id > b.id) ? 1: -1)
-            //busco el perfil cuyo mail matchee con el mio
-            for (var i = 0; i < myList.length; i++){
-                if (myList[i].email == this.props.screenProps.user.email){
-                    this.setState({profile: myList[i]})
-                    this.setState({id: this.state.profile.id})
-                    this.setState({formData:{id: this.state.profile.id}})
-                }
-            }
+          let json = await profileResponse.json();
+          this.setState({profile: json.message})
+          this.setState({id: this.state.profile.id})
+          this.setState({formData:{id: this.state.profile.id}})
         }else{
           let json = await profileResponse.json();
           this.setState({error: json.message ?? 'Oops! Something went wrong.'});
         } 
+
     }
 
 
