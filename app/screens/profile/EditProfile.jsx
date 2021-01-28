@@ -31,12 +31,14 @@ export default class EditProfile extends React.Component {
         
         if(profileResponse.status == 200){
             let json = await profileResponse.json(); 
-            busco el perfil cuyo mail matchee con el mio
-            for (var i = 0; i < json.message.users.length; i++){
-                if (json.message.users[i].email == this.props.screenProps.user.email){
-                    this.setState({profile: json.message.users[i]})
-                    this.setState({id: i})
-                    this.setState({formData:{id: i}})
+            let myList = json.message.users
+            myList.sort((a,b) => (a.id > b.id) ? 1: -1)
+            //busco el perfil cuyo mail matchee con el mio
+            for (var i = 0; i < myList.length; i++){
+                if (myList[i].email == this.props.screenProps.user.email){
+                    this.setState({profile: myList[i]})
+                    this.setState({id: this.state.profile.id})
+                    this.setState({formData:{id: this.state.profile.id}})
                 }
             }
         }else{

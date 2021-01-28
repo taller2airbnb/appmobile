@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Body, Text, Button, View, H3 } from 'native-base';
+import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col } from 'native-base';
 import React from "react";
 import Constants from 'expo-constants';
 import {get} from '../../api/ApiHelper';
@@ -17,20 +17,22 @@ export default class MyProfile extends React.Component {
   }
 
   async componentDidMount(){
-    this.getProfile();
+    this.reloadProfile();
   }
 
 
-  async getProfile(){
+  async reloadProfile(){
     let profileResponse = await get(Constants.manifest.extra.profileEndpoint, this.props.screenProps.user.accessToken)
     if(profileResponse.status == 200){
-      let json = await profileResponse.json();          
+      let json = await profileResponse.json();
+      let myList = json.message.users
+      myList.sort((a,b) => (a.id > b.id) ? 1: -1)
       //busco el perfil cuyo mail matchee con el mio
-      for (var i = 0; i < json.message.users.length; i++){
-        if (json.message.users[i].email == this.props.screenProps.user.email){
-          this.setState({profile: json.message.users[i]})
-          this.setState({id: i})
-          this.setState({length: json.message.users.length})
+      for (var i = 0; i < myList.length; i++){
+        if (myList[i].email == this.props.screenProps.user.email){
+          this.setState({profile: myList[i]})
+          this.setState({id: this.state.profile.id})
+          this.setState({length: myList.length})
           }
       }
     }else{
@@ -53,7 +55,7 @@ export default class MyProfile extends React.Component {
 
   render() {
     return <Container>
-      <NavigationEvents onDidFocus={() => this.getProfile()} />
+      <NavigationEvents onDidFocus={() => this.reloadProfile()} />
       <Header>
       <Body style={{flex:1,justifyContent: "center",alignItems: "center"}}>
         <Title>My Profile</Title>
@@ -64,14 +66,24 @@ export default class MyProfile extends React.Component {
           {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
             <Text style={{color:'red'}}>{this.state.error}</Text>
           </View>}
-          <H3 style={{marginTop:20, marginLeft: 10}}>Name</H3>
-          <Text>{this.state.profile.first_name} {this.state.profile.last_name}</Text>
-          <H3 style={{marginTop:20, marginLeft: 10}}>Username</H3>
-          <Text>{this.state.profile.alias}</Text>
-          <H3 style={{marginTop:20, marginLeft: 10}}>Email</H3>
-          <Text>{this.state.profile.email}</Text>
-          <H3 style={{marginTop:20, marginLeft: 10}}>Document Id</H3>
-          <Text>{this.state.profile.national_id_type} {this.state.profile.national_id}</Text>
+          <Text></Text>
+          <Text></Text>
+          <Row>
+            <Col><H3 style={{marginTop:10, marginLeft: 30, marginBottom:10}}>Name</H3></Col>
+            <Col><Text style={{marginTop:7}}>{this.state.profile.first_name + ' ' + this.state.profile.last_name}</Text></Col>
+          </Row>
+          <Row>
+            <Col><H3 style={{marginTop:10, marginLeft: 30, marginBottom:10}}>Username</H3></Col>
+            <Col><Text style={{marginTop:7}}>{this.state.profile.alias}</Text></Col>
+          </Row>
+          <Row>
+            <Col><H3 style={{marginTop:10, marginLeft: 30, marginBottom:10}}>Email</H3></Col>
+            <Col><Text style={{marginTop:7}}>{this.state.profile.email}</Text></Col>
+          </Row>
+          <Row>
+            <Col><H3 style={{marginTop:10, marginLeft: 30, marginBottom:10}}>Document Id</H3></Col>
+            <Col><Text style={{marginTop:7}}>{this.state.profile.national_id_type} {this.state.profile.national_id}</Text></Col>
+          </Row>
           <Text></Text>
           <Text></Text>
           <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={() => this.props.navigation.navigate("EditProfile")}>
