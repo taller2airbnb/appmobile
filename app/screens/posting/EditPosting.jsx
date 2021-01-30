@@ -3,7 +3,7 @@ import {Alert} from 'react-native';
 import React from "react";
 import * as Google from 'expo-google-app-auth';
 import Constants from 'expo-constants';
-import {post, get} from '../../api/ApiHelper';
+import {put, get} from '../../api/ApiHelper';
 import moment from 'moment';
 import CountryDropdown from '../../components/CountryDropdown';
 
@@ -63,6 +63,8 @@ export default class EditPosting extends React.Component {
           this.setState({formData: rest});
           this.setState({startDate: new Date(this.state.formData.start_date)})
           this.setState({endDate: new Date(this.state.formData.end_date)})
+          this.setStartDate(this.state.startDate);
+          this.setEndDate(this.state.endDate);
           this.setState({fetching: false})
         }else{
           let json = await postingResponse.json();          
@@ -131,7 +133,7 @@ export default class EditPosting extends React.Component {
 
         const features = this.state.possibleFeatures.filter(f => f.value).map(x=> x.id_feature).join(',');
         const data = {...this.state.formData, features: features}
-        let response = await post(Constants.manifest.extra.postingEndpoint, data, this.props.screenProps.user.accessToken)
+        let response = await put(Constants.manifest.extra.postingEndpoint+ '/' +this.props.navigation.getParam('postingId'), data, this.props.screenProps.user.accessToken)
         if(response.status == 200){
           Alert.alert(
             "Posting Updated Successfully",
@@ -141,7 +143,7 @@ export default class EditPosting extends React.Component {
             ],
             { cancelable: false }
           );
-          this.props.navigation.navigate('MyPostings')
+          this.props.navigation.navigate('MyPostings', {refresh:true})
         }else{
           let json = await response.json();
           Alert.alert(json.message ?? 'Oops! Something went wrong.')          
@@ -236,7 +238,7 @@ export default class EditPosting extends React.Component {
           </Form>
           <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={this.updatePosting}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-              <Text style={{color:'white'}}>Create Posting</Text>
+              <Text style={{color:'white'}}>Update Posting</Text>
             </View>
           </Button></>
         }

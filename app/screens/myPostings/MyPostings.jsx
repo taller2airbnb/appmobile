@@ -15,7 +15,7 @@ export default class MyPostings extends React.Component {
         }        
       }
 
-      async componentDidMount(){
+      async getPostings(){
         let postingsResponse = await get(Constants.manifest.extra.myPostingsEndpoint, this.props.screenProps.user.accessToken)
         if(postingsResponse.status == 200){
           let json = await postingsResponse.json();
@@ -24,7 +24,21 @@ export default class MyPostings extends React.Component {
         }else{
           let json = await postingsResponse.json();
           this.setState({error: json.message ?? 'Sorry. Could not retrieve postings.'});
-        }        
+        }
+      }
+
+      async componentDidMount(){
+        this.getPostings()
+      }      
+
+      componentDidUpdate(prevProps, prevState, snapshot){        
+        if(prevProps.navigation !== this.props.navigation){
+          if(this.props.navigation.getParam('refresh')){
+            this.setState({fetching: true})
+            this.getPostings();
+            this.props.navigation.setParams({refresh: false})
+          }          
+        }   
       }
 
       editPosting(id){
