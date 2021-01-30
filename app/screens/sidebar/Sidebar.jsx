@@ -17,6 +17,12 @@ const drawerCover = require("../../assets/drawer-cover.png");
 const drawerImage = require("../../assets/degoas.png");
 const datas = [
   {
+    name: "My profile",
+    route: "MyProfile",
+    bg: "#C5F442",
+    profiles:[0,1,2]
+  },
+  {
     name: "Create Posting",
     route: "Posting",
     bg: "#C5F442",
