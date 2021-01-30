@@ -111,9 +111,14 @@ export default class Login extends React.Component {
               <Text style={{color:'white'}}>Sign In With Google</Text>
             </View>
           </Button>
-          <Button primary style={{ alignSelf: "center", width:200 }} onPress={() => this.props.navigation.navigate('Register')}>
+          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }} onPress={() => this.props.navigation.navigate('Register')}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Register</Text>
+            </View>
+          </Button>
+          <Button primary style={{ alignSelf: "center", width:200 }} onPress={() => this.props.navigation.navigate('Password')}>
+          <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+              <Text style={{color:'white'}}>Forgot your password?</Text>
             </View>
           </Button>
         </Content>        
