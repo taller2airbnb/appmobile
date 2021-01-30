@@ -16,6 +16,8 @@ import PostingSearch from "../screens/posting/PostingSearch";
 import MyProfile from "../screens/profile/MyProfile";
 import EditProfile from "../screens/profile/EditProfile";
 import Booking from "../screens/booking/Booking";
+import Password from "../screens/password/Password";
+import ChangePassword from "../screens/password/ChangePassword";
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 
@@ -29,7 +31,9 @@ const Drawer = createDrawerNavigator(
     PostingSearch: {screen: PostingSearch},
     MyProfile: {screen: MyProfile},
     EditProfile: {screen: EditProfile},
-    Booking: {screen: Booking}
+    Booking: {screen: Booking},
+    Password: {screen: Password},
+    ChangePassword: {screen: ChangePassword}
   },
   {
     initialRouteName: "Login",
@@ -51,7 +55,9 @@ const AppNavigator = createStackNavigator(
     MyBookings: {screen: MyBookings},
     Booking: {screen: Booking},
     MyProfile: {screen: MyProfile},
-    EditProfile: {screen: EditProfile}
+    EditProfile: {screen: EditProfile},
+    Password: {screen: Password},
+    ChangePassword: {screen: ChangePassword},
   },
   {
     initialRouteName: "Drawer",
