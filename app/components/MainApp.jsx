@@ -14,6 +14,7 @@ import Register from "../screens/register/Register"
 import SideBar from "../screens/sidebar/Sidebar";
 import PostingSearch from "../screens/posting/PostingSearch";
 import Booking from "../screens/booking/Booking";
+import EditPosting from "../screens/posting/EditPosting";
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 
@@ -45,7 +46,8 @@ const AppNavigator = createStackNavigator(
     MyPostings: {screen: MyPostings},
     MyBookings: {screen: MyBookings},
     PostingSearch: {screen: PostingSearch},
-    Booking: {screen: Booking}
+    Booking: {screen: Booking},
+    EditPosting: {screen: EditPosting}
   },
   {
     initialRouteName: "Drawer",

@@ -11,7 +11,8 @@
     "androidStandAloneClientId": "266504353107-r4ft0ndal69f4cvhqudauo3s0ojgajp9.apps.googleusercontent.com",
     "intentBookingEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/intentBooking",
     "myBookingsEndpoint":"https://taller2airbnb-businesscore.herokuapp.com/myBookings",
-    "myBookingIntentsEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/myBookingIntents"
+    "myBookingIntentsEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/myBookingIntents",
+    "myPostingsEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/myPostings"
   },
   "android": {
     "package": "bookbnb.degoasedition",
