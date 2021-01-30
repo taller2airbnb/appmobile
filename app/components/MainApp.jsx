@@ -13,8 +13,12 @@ import Home from "../screens/home/Home";
 import Register from "../screens/register/Register"
 import SideBar from "../screens/sidebar/Sidebar";
 import PostingSearch from "../screens/posting/PostingSearch";
+import MyProfile from "../screens/profile/MyProfile";
+import EditProfile from "../screens/profile/EditProfile";
 import Booking from "../screens/booking/Booking";
 import EditPosting from "../screens/posting/EditPosting";
+import Password from "../screens/password/Password";
+import ChangePassword from "../screens/password/ChangePassword";
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 
@@ -26,7 +30,11 @@ const Drawer = createDrawerNavigator(
     MyBookings: {screen: MyBookings},
     Login:  {screen: Login},
     PostingSearch: {screen: PostingSearch},
-    Booking: {screen: Booking}
+    MyProfile: {screen: MyProfile},
+    EditProfile: {screen: EditProfile},
+    Booking: {screen: Booking},
+    Password: {screen: Password},
+    ChangePassword: {screen: ChangePassword}
   },
   {
     initialRouteName: "Login",
@@ -44,10 +52,14 @@ const AppNavigator = createStackNavigator(
     Register: {screen: Register},
     Posting: {screen: Posting},
     MyPostings: {screen: MyPostings},
+    PostingSearch: {screen: PostingSearch},    
+    EditPosting: {screen: EditPosting},
     MyBookings: {screen: MyBookings},
-    PostingSearch: {screen: PostingSearch},
     Booking: {screen: Booking},
-    EditPosting: {screen: EditPosting}
+    MyProfile: {screen: MyProfile},
+    EditProfile: {screen: EditProfile},
+    Password: {screen: Password},
+    ChangePassword: {screen: ChangePassword},
   },
   {
     initialRouteName: "Drawer",

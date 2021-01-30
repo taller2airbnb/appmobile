@@ -35,6 +35,14 @@ export async function get(endpoint, bearerToken){
     return response;
 }
 
+export async function put(endpoint, body = '', bearerToken){
+    let headers = { 'Content-Type': 'application/json' }
+    const requestOptions = getRequestOptions('PUT', headers, body, bearerToken);    
+  
+    let response = await fetch(endpoint, requestOptions);
+    return response;
+}
+
 export function toQueryParams(paramsObject){
 
   let params = Object.keys(paramsObject).filter(x => paramsObject[x] !== null && paramsObject[x] !== '');
