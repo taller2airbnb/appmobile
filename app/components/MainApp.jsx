@@ -16,6 +16,7 @@ import PostingSearch from "../screens/posting/PostingSearch";
 import MyProfile from "../screens/profile/MyProfile";
 import EditProfile from "../screens/profile/EditProfile";
 import Booking from "../screens/booking/Booking";
+import EditPosting from "../screens/posting/EditPosting";
 import Password from "../screens/password/Password";
 import ChangePassword from "../screens/password/ChangePassword";
 import * as Notifications from 'expo-notifications';
@@ -51,7 +52,8 @@ const AppNavigator = createStackNavigator(
     Register: {screen: Register},
     Posting: {screen: Posting},
     MyPostings: {screen: MyPostings},
-    PostingSearch: {screen: PostingSearch},
+    PostingSearch: {screen: PostingSearch},    
+    EditPosting: {screen: EditPosting},
     MyBookings: {screen: MyBookings},
     Booking: {screen: Booking},
     MyProfile: {screen: MyProfile},

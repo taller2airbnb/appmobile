@@ -13,6 +13,7 @@
     "intentBookingEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/intentBooking",
     "myBookingsEndpoint":"https://taller2airbnb-businesscore.herokuapp.com/myBookings",
     "myBookingIntentsEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/myBookingIntents",
+    "myPostingsEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/myPostings",
     "recoverPasswordEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/recover_token/"
   },
   "android": {
