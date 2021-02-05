@@ -28,7 +28,7 @@ export default class Login extends React.Component {
     let response = await post(Constants.manifest.extra.loginEndpoint, body)
      
     if(response.status == 200){
-      let json = await response.json();      
+      let json = await response.json();
       this.props.screenProps.handleLogIn({...json.message, accessToken: json.token});
       this.props.navigation.navigate('Home');
       }else{
@@ -66,7 +66,7 @@ export default class Login extends React.Component {
         let response = await fetch(Constants.manifest.extra.loginEndpoint, requestOptions);
         if(response.status == 200){
           let json = await response.json();
-          this.props.screenProps.handleLogIn({...json.message, accessToken: json.token});
+          this.props.screenProps.handleLogIn({...json.message, accessToken: json.token});          
           this.props.navigation.navigate('Home');
       }else{
           let json = await response.json();

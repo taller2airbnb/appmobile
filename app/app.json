@@ -14,7 +14,8 @@
     "myBookingsEndpoint":"https://taller2airbnb-businesscore.herokuapp.com/myBookings",
     "myBookingIntentsEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/myBookingIntents",
     "myPostingsEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/myPostings",
-    "recoverPasswordEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/recover_token/"
+    "recoverPasswordEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/recover_token/",
+    "pushTokenEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/pushToken"
   },
   "android": {
     "package": "bookbnb.degoasedition",
