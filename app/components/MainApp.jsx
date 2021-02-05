@@ -21,6 +21,7 @@ import Password from "../screens/password/Password";
 import ChangePassword from "../screens/password/ChangePassword";
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import {put, toQueryParams} from '../api/ApiHelper';
 
 const Drawer = createDrawerNavigator(
   {
@@ -95,7 +96,10 @@ export default class MainApp extends React.Component {
         alert('Failed to get push token for push notification!');
         return;
       }
-      const token = (await Notifications.getExpoPushTokenAsync()).data;      
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      const data = {push_token: token};
+      let params = toQueryParams({idUser: this.state.user.id});
+      let pushTokenResponse = await put(Constants.manifest.extra.pushTokenEndpoint + params, data, this.props.screenProps.user.accessToken)        
       this.setState({ expoPushToken: token });
     } else {
       alert('Must use physical device for Push Notifications');
