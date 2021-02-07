@@ -6,6 +6,7 @@ import Constants from 'expo-constants';
 import {post, get} from '../../api/ApiHelper';
 import moment from 'moment';
 import CountryDropdown from '../../components/CountryDropdown';
+import CitiesDropdown from '../../components/CitiesDropdown';
 
 export default class Posting extends React.Component {
     constructor(props) {
@@ -21,7 +22,7 @@ export default class Posting extends React.Component {
                 name: '',
                 latitude: 0,
                 longitude:0,
-                country:'Argentina',
+                country:'AR',
                 city: '',
                 max_number_guests: 1
             },
@@ -29,6 +30,7 @@ export default class Posting extends React.Component {
           startDate: new Date(),
           endDate: new Date(),
           currentDate: new Date(),
+          city: {},
           error: ''
         }        
         this.setEndDate = this.setEndDate.bind(this);
@@ -37,6 +39,7 @@ export default class Posting extends React.Component {
         this.createPosting = this.createPosting.bind(this);
         this.navigateToMyPostings = this.navigateToMyPostings.bind(this);
         this.onCountryChange = this.onCountryChange.bind(this);
+        this.onCityChange = this.onCityChange.bind(this);
       }
 
       async componentDidMount(){
@@ -90,6 +93,14 @@ export default class Posting extends React.Component {
         });
       }
 
+      onCityChange(value) {
+        let newState = { ...this.state};
+        newState.formData.city = value.name;
+        this.setState({
+            newState
+        });
+      }
+
       toggleCheckbox(index) {
         let newState = { ...this.state};
         newState.possibleFeatures[index].value = !this.state.possibleFeatures[index].value;
@@ -138,8 +149,11 @@ export default class Posting extends React.Component {
               <CountryDropdown placeholder="Country" selected={this.state.formData.country} onValueChange={this.onCountryChange}/>
             </Item>
             <Item>
-              <Input placeholder="City" onChange={ (e) => this.handleInputChange(e, 'city')}/>
+              <CitiesDropdown placeholder="City" selected={this.state.formData.city} selectedCountryCode={this.state.formData.country} onValueChange={this.onCityChange}/>
             </Item>
+            {/* <Item>
+              <Input placeholder="City" onChange={ (e) => this.handleInputChange(e, 'city')}/>
+            </Item> */}
             <H3 style={{marginTop:20, marginLeft: 10}}>Location Latitude</H3>
             <Item>
               <Input label='Latitude' placeholder="Latitude" keyboardType='numeric' onChange={ (e) => this.handleNumberChange(e, 'latitude')}/>
