@@ -16,8 +16,27 @@
         ],
     "chats":
         {
-            "Martin_Claudia": [],
-            "Esteban_Martin": [],
+            "Martin_Claudia": [
+                {
+                    "Martin": [
+                        {"created": "2020-02-20T18:25:43.511Z",
+                        "text": "hola!"},
+                        {"created": "2020-02-20T20:25:43.511Z",
+                        "text": "ok."}
+                    ],
+                    "Claudia": [
+                        {"created": "2020-02-20T19:25:43.511Z",
+                        "text": "chau"}
+
+                    ]
+                }
+            ],
+            "Esteban_Martin": [
+                {
+                    "Martin": [],
+                    "Esteban": []
+                }
+            ],
             "Jorge_Carlos": []
         }
 }

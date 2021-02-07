@@ -9,7 +9,7 @@ import 'firebase/database';
 
 import firebase from "firebase/app";
 
-
+import mockdb from "./mockdb.json"
 
 
 const FirebaseConfig = {
@@ -23,6 +23,19 @@ const FirebaseConfig = {
   }
   
 
+  function dateConvertor(date){
+    var options = { weekday: "long",  
+                     year: "numeric",  
+                     month: "short",  
+                     day: "numeric" };  
+ 
+    var newDateFormat = new Date(date).toLocaleDateString("en-US", options); 
+    var newTimeFormat = new Date(date).toLocaleTimeString();  
+    var dateAndTime = newDateFormat +' ' + newTimeFormat        
+   return dateAndTime
+ }
+
+
 export default class ChatMessage extends React.Component {
   constructor(props) {
     super(props);
@@ -32,6 +45,7 @@ export default class ChatMessage extends React.Component {
       people: [], 
       name: this.props.navigation.getParam('name', 'blank'),
       chatId: this.props.navigation.getParam('chatId', 'blank'),
+      messageList: [],
       }        
   }
 
@@ -44,17 +58,68 @@ export default class ChatMessage extends React.Component {
   }
 
   async componentDidMount(){
+    let chatId = this.props.navigation.getParam('chatId', 'blank')
     this.setState({name: this.props.navigation.getParam('name', 'blank')})
+    this.setState({chatId: chatId})
     this.initializeFirebase();
+    this.reloadMessages(chatId);
+  }
+
+
+  reloadMessages(chatId){
+    let myList = []
+    console.log('______________________');
+    let messageList = mockdb.chats[chatId]
+    //console.log(messageList);
+    for (var sayer in messageList){
+        for (var messagesayer in messageList[sayer]){
+            for (var message in messageList[sayer][messagesayer]){
+                let m = messageList[sayer][messagesayer][message];
+                let messageText = m.text;
+                let messageTime = m.created
+                let datet = dateConvertor(messageTime);
+                console.log(messagesayer + ' ' + messageText + ' ' + messageTime)
+                //console.log(datet)
+                myList.push({
+                    sayer: messagesayer,
+                    text: messageText,
+                    time: datet
+                })
+            }
+        }
+    }
+    myList.sort((a,b) => (a.time > b.time) ? 1: -1);
+    //console.log(myList.length)
+    //console.log(myList[0])
+    this.setState({messageList: myList})
+    console.log(this.state.messageList.length)
   }
 
   componentDidUpdate(prevProps, prevState, snapshot){
+    let chatId = this.props.navigation.getParam('chatId', 'blank')
     if(prevProps.navigation !== this.props.navigation){
         this.setState({name: this.props.navigation.getParam('name', 'blank')})
-        this.setState({chatId: this.props.navigation.getParam('chatId', 'blank')})
+        this.setState({chatId: chatId})
       }
+      //this.reloadMessages(chatId);
       
     }   
+
+    renderMessage(message){
+        let sayerAlign = 'left';
+        let spaceLeft =  '';
+        let spaceRight = '                              ';
+        if (message.sayer == 'Martin'){
+            sayerAlign = 'right';
+            spaceLeft = '                                '
+            spaceRight = ''
+        }
+        return (
+            <Text style={{textAlign: sayerAlign}}>
+                {spaceLeft}{message.text}{spaceRight}
+            </Text>
+        )
+    }
 
   render() {
     return <Container>
@@ -69,7 +134,7 @@ export default class ChatMessage extends React.Component {
             <Text style={{color:'red'}}>{this.state.error}</Text>
             </View>}
             <Text></Text>
-            <Text>Chat Id: {this.state.chatId}</Text>
+            {this.state.messageList.map(this.renderMessage, this)}
             <Text></Text>
             <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={() => this.props.navigation.navigate("Chat")}>
                 <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>

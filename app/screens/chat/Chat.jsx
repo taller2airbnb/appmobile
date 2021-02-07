@@ -20,7 +20,6 @@ const FirebaseConfig = {
   }
   
 import mockdb from "./mockdb.json"
-//import mockdb from "../mockdb.js"
 
 
 export default class Chat extends React.Component {
@@ -41,7 +40,14 @@ export default class Chat extends React.Component {
         await firebase.app().delete();
     }
     firebase.initializeApp(FirebaseConfig);
-    
+  }
+
+  async checkFirebase(){
+    const myItems = firebase.database().ref('items');
+    console.log(myItems)
+    myItems.on('value', datasnap=>{
+        console.log(datasnap.val())
+    })
   }
 
   async componentDidMount(){
@@ -62,7 +68,6 @@ export default class Chat extends React.Component {
     //    });
     //    this.setState({people: myList})
     //}) 
-    console.log('holahhAAAAAAAAAAAAA')
     this.getContacts();
   }
 
