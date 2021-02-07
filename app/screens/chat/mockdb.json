@@ -1,0 +1,23 @@
+{
+    "pairings":
+        [
+            {
+                "users": ["Martin", "Claudia"],
+                "chat": "Martin_Claudia"
+            },
+            {
+                "users": ["Esteban", "Martin"],
+                "chat": "Esteban_Martin"
+            },
+            {
+                "users": ["Carlos", "Jorge"],
+                "chat": "Jorge_Carlos"
+            }
+        ],
+    "chats":
+        {
+            "Martin_Claudia": [],
+            "Esteban_Martin": [],
+            "Jorge_Carlos": []
+        }
+}
