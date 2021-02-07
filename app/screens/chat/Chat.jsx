@@ -3,6 +3,7 @@ import React from "react";
 import Constants from 'expo-constants';
 import {Alert} from 'react-native';
 import {NavigationEvents} from 'react-navigation';
+import {get} from '../../api/ApiHelper';
 import 'firebase/firestore';
 import 'firebase/auth';
 import 'firebase/database';
@@ -32,6 +33,7 @@ export default class Chat extends React.Component {
       contacts: ['Jorge', 'Claudia', 'Lautaro'],
       chatIds: {},
       people: [], 
+      users: {},
       }        
   }
 
@@ -51,6 +53,7 @@ export default class Chat extends React.Component {
   }
 
   async componentDidMount(){
+    this.getUserInfo();
     this.initializeFirebase();
     //let dfref = firebase.database().ref('est');
     
@@ -71,18 +74,38 @@ export default class Chat extends React.Component {
     this.getContacts();
   }
 
-  getContacts(){
-      let myName = 'Martin';
+  async getUserInfo(){
+    let endpoint = Constants.manifest.extra.profileEndpoint
+    let profileResponse = await get(endpoint, this.props.screenProps.user.accessToken)
+    if(profileResponse.status == 200){
+      let json = await profileResponse.json();
+      this.setState({users: this.userIntoList(json.message.users)})
+    }else{
+      let json = await profileResponse.json();
+      this.setState({error: json.message ?? 'Oops! Something went wrong.'});
+    } 
+  }
+
+  userIntoList(userInfo){
+    let userDict = {}
+    for (var user in userInfo){
+      userDict[userInfo[user].id] = userInfo[user].first_name
+    }
+    return(userDict)
+  }
+
+  async getContacts(){
+      let myId = this.props.screenProps.user.id.toString();
       let myContacts = [];
       let userList = [];
       let contact = '';
       let myChats = {};
+      let contactInfo = {};
       let pairingList = mockdb.pairings;
       for (var pairing in pairingList) {
-          //myContacts = pairing.users;
         userList = pairingList[pairing].users
-          if (userList.includes(myName)){
-            if (userList[0]!=myName){
+          if (userList.includes(myId)){
+            if (userList[0]!=myId){
                 contact = userList[0];
             }
             else{
@@ -100,9 +123,9 @@ export default class Chat extends React.Component {
     return (
         <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}
         //onPress={() => this.props.navigation.navigate("ChatMessage", {name: contactName})}>
-        onPress={() => this.props.navigation.navigate("ChatMessage", {name: contactName, chatId: this.state.chatIds[contactName]})}>
+        onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[contactName], chatId: this.state.chatIds[contactName]})}>
             <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-              <Text style={{color:'white'}}>Chat with {contactName}</Text>
+              <Text style={{color:'white'}}>Chat with {this.state.users[contactName]}</Text>
             </View>
         </Button>
     )

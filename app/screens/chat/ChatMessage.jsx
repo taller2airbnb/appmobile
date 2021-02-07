@@ -63,8 +63,28 @@ export default class ChatMessage extends React.Component {
     this.setState({chatId: chatId})
     this.initializeFirebase();
     this.reloadMessages(chatId);
+    this.getUser
   }
 
+  async getUserInfo(){
+    let endpoint = Constants.manifest.extra.profileEndpoint
+    let profileResponse = await get(endpoint, this.props.screenProps.user.accessToken)
+    if(profileResponse.status == 200){
+      let json = await profileResponse.json();
+      this.setState({users: this.userIntoList(json.message.users)})
+    }else{
+      let json = await profileResponse.json();
+      this.setState({error: json.message ?? 'Oops! Something went wrong.'});
+    } 
+  }
+
+  userIntoList(userInfo){
+    let userDict = {}
+    for (var user in userInfo){
+      userDict[userInfo[user].id] = userInfo[user].first_name
+    }
+    return(userDict)
+  }
 
   reloadMessages(chatId){
     let myList = []
@@ -100,24 +120,20 @@ export default class ChatMessage extends React.Component {
     if(prevProps.navigation !== this.props.navigation){
         this.setState({name: this.props.navigation.getParam('name', 'blank')})
         this.setState({chatId: chatId})
+        this.reloadMessages(chatId);
       }
-      //this.reloadMessages(chatId);
       
     }   
 
     renderMessage(message){
         let sayerAlign = 'left';
-        let spaceLeft =  '';
-        let spaceRight = '                              ';
-        if (message.sayer == 'Martin'){
+        if (message.sayer == this.props.screenProps.user.id){
             sayerAlign = 'right';
-            spaceLeft = '                                '
-            spaceRight = ''
         }
         return (
-            <Text style={{textAlign: sayerAlign}}>
-                {spaceLeft}{message.text}{spaceRight}
-            </Text>
+          <Text style={{minWidth: '70%', textAlign: sayerAlign}}>
+              {message.text}
+          </Text>
         )
     }
 

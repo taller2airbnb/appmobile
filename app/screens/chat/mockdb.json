@@ -2,41 +2,43 @@
     "pairings":
         [
             {
-                "users": ["Martin", "Claudia"],
-                "chat": "Martin_Claudia"
+                "users": ["42", "5"],
+                "chat": "42_5"
             },
             {
-                "users": ["Esteban", "Martin"],
-                "chat": "Esteban_Martin"
+                "users": ["1", "42"],
+                "chat": "1_42"
             },
             {
-                "users": ["Carlos", "Jorge"],
-                "chat": "Jorge_Carlos"
+                "users": ["6", "4"],
+                "chat": "6_4"
             }
         ],
     "chats":
         {
-            "Martin_Claudia": [
+            "42_5": [
                 {
-                    "Martin": [
+                    "42": [
                         {"created": "2020-02-20T18:25:43.511Z",
                         "text": "hola!"},
                         {"created": "2020-02-20T20:25:43.511Z",
                         "text": "ok."}
                     ],
-                    "Claudia": [
+                    "5": [
                         {"created": "2020-02-20T19:25:43.511Z",
                         "text": "chau"}
 
                     ]
                 }
             ],
-            "Esteban_Martin": [
+            "1_42": [
                 {
-                    "Martin": [],
-                    "Esteban": []
+                    "42": [],
+                    "1": [
+                        {"created": "2020-02-20T18:25:43.511Z",
+                        "text": "Buenos Aires"}]
                 }
             ],
-            "Jorge_Carlos": []
+            "6_4": []
         }
 }
