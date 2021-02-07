@@ -7,6 +7,27 @@ import moment from 'moment';
 import { Image } from 'react-native';
 const postingImage = require("../../assets/degoas.png");
 
+
+import mockdb from "./mockdb.json"
+
+function renderMessage(user, text, you, owner){
+  let sayerAlign = 'left';
+  let sayer = user + ': '
+  if (owner){
+    sayer = user + ' (OWNER): '
+  }
+  if (you){
+      sayerAlign = 'right';
+      sayer = 'You: '
+  }
+  return (
+    <Text style={{marginTop: 5, marginBottom:3, marginLeft: 7, marginRight: 7, minWidth: '70%', textAlign: sayerAlign}}>
+        {sayer}{text}
+    </Text>
+  )
+}
+
+
 export default class Booking extends React.Component {
     constructor(props) {
         super(props);
@@ -23,7 +44,9 @@ export default class Booking extends React.Component {
           endDate: new Date(),
           currentDate: new Date(),
           error: '',
-          fetching: true
+          fetching: true,
+          users: {},
+          messages: [],
         }        
         this.setEndDate = this.setEndDate.bind(this);
         this.setStartDate = this.setStartDate.bind(this);
@@ -49,15 +72,42 @@ export default class Booking extends React.Component {
       }  
       }
 
+      async reloadMessages(postingId){
+        if (!mockdb.postings[postingId]){
+          this.setState({messages: []})
+        }
+        let messageList = mockdb.postings[postingId]
+        messageList.sort((a,b) => (a.time > b.time) ? 1: -1)
+        this.setState({messages: messageList})
+      }
+
+      renderComments(item) {
+        let messageList = item.content.messages
+        messageList.sort((a,b) => (a.created > b.created) ? 1: -1)
+        let userList = item.content.users
+        let yourId = item.content.yourId
+        let owner = item.content.owner
+        if (messageList.length == 0) {
+          return (
+              <Text style={{marginTop: 10, marginBottom: 10, textAlign: 'center'}}>This booking has no messages.</Text>
+          )
+        }
+        else{
+        return (
+              <>{messageList.map(message => renderMessage(userList[message.user], message.text, yourId==message.user, owner==message.user))}</>
+        );
+        }
+      }
+
       populateAccordionDetails(){
-        let description = { title: 'Desription', content: this.state.posting.content}
+        let description = { title: 'Description', content: this.state.posting.content}
         let features = { title: 'Features', content: 'Feature 1, 2 , 3 , 4'}
         this.setState({accordionDetailsArray: [description, features]})
-        
       }
 
       async componentDidMount(){        
         this.getPosting();
+        this.getUserInfo();
       }
 
       async getPosting(){
@@ -67,6 +117,7 @@ export default class Booking extends React.Component {
           this.setState({posting: json.message[0]});
           this.populateAccordionDetails();
           this.setState({fetching: false})
+          this.reloadMessages(this.state.posting.id_posting);
         }else{
           let json = await postingResponse.json();
           this.setState({error: json.message ?? 'Oops! Something went wrong.'});
@@ -78,6 +129,27 @@ export default class Booking extends React.Component {
           this.setState(this.initialState());
           this.getPosting();
         }    
+      }
+
+      async getUserInfo(){
+        //necesaria para ver los nombres de la gente que comenta
+        let endpoint = Constants.manifest.extra.profileEndpoint
+        let profileResponse = await get(endpoint, this.props.screenProps.user.accessToken)
+        if(profileResponse.status == 200){
+          let json = await profileResponse.json();
+          this.setState({users: this.userIntoList(json.message.users)})
+        }else{
+          let json = await profileResponse.json();
+          this.setState({error: json.message ?? 'Oops! Something went wrong.'});
+        } 
+      }
+    
+      userIntoList(userInfo){
+        let userDict = {}
+        for (var user in userInfo){
+          userDict[userInfo[user].id] = userInfo[user].first_name
+        }
+        return(userDict)
       }
 
       navigateToMyBookings = () => {
@@ -187,6 +259,19 @@ export default class Booking extends React.Component {
             renderHeader={this._renderHeader}
             renderContent={this._renderContent}
           />
+        <Accordion
+            dataArray={[{ title: 'Comments', content: {messages: this.state.messages, users: this.state.users, yourId: this.props.screenProps.user.id.toString(), owner: this.state.posting.id_user}}]}
+            animation={true}
+            expanded={true}
+            renderHeader={this._renderHeader}
+            renderContent={this.renderComments}
+          />
+          <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:200 }}
+              onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[this.state.posting.id_user], otherUserId: this.state.posting.id_user})}>
+            <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+              <Text style={{color:'white'}}>Chat with owner</Text>
+            </View>
+          </Button>
         <Content style={{borderWidth: 4, borderColor: "#3F51B5", margin: 5, borderRadius: 6}}>
         <Content padder style={{ backgroundColor: "#fff"}}>
         <Text>Check In</Text>

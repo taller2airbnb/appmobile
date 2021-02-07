@@ -23,18 +23,6 @@ const FirebaseConfig = {
   }
   
 
-  function dateConvertor(date){
-    var options = { weekday: "long",  
-                     year: "numeric",  
-                     month: "short",  
-                     day: "numeric" };  
- 
-    var newDateFormat = new Date(date).toLocaleDateString("fr-CA", options); 
-    var newTimeFormat = new Date(date).toLocaleTimeString();  
-    var dateAndTime = newDateFormat +' ' + newTimeFormat        
-   return dateAndTime
- }
-
 
 export default class ChatMessage extends React.Component {
   constructor(props) {
@@ -44,7 +32,7 @@ export default class ChatMessage extends React.Component {
       error: '',
       people: [], 
       name: this.props.navigation.getParam('name', 'blank'),
-      chatId: this.props.navigation.getParam('chatId', 'blank'),
+      chatId: '',
       messageList: [],
       formData: {
           message:''
@@ -75,11 +63,10 @@ export default class ChatMessage extends React.Component {
   })
     myList.sort((a,b) => (a.time > b.time) ? 1: -1);
     this.setState({messageList: myList})
-    //console.log(myList)
   }
 
   async componentDidMount(){
-    let chatId = this.props.navigation.getParam('chatId', 'blank')
+    let chatId = this.getChatId(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
     this.setState({name: this.props.navigation.getParam('name', 'blank')})
     this.setState({chatId: chatId})
     this.initializeFirebase();
@@ -107,6 +94,23 @@ export default class ChatMessage extends React.Component {
     return(userDict)
   }
 
+  getChatId(user1, user2){
+    let userList = [];
+    let pairingList = mockdb.pairings;
+    for (var pairing in pairingList) {
+      userList = pairingList[pairing].users
+      console.log('userList')
+      console.log(userList)
+      if (userList.includes(user1) && userList.includes(user2)){
+        
+        console.log('Match!')
+        console.log(pairingList[pairing].chat)
+        return (pairingList[pairing].chat)
+      }
+    }
+  }
+
+
   reloadMessages(chatId){
     let myList = []
     console.log('______________________');
@@ -132,7 +136,8 @@ export default class ChatMessage extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot){
-    let chatId = this.props.navigation.getParam('chatId', 'blank')
+    console.log('other user id: ' + this.props.navigation.getParam('otherUserId', 'blank'))
+    let chatId = this.getChatId(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
     if(prevProps.navigation !== this.props.navigation){
         this.setState({name: this.props.navigation.getParam('name', 'blank')})
         this.setState({chatId: chatId})
@@ -158,10 +163,8 @@ export default class ChatMessage extends React.Component {
       if(!this.validForm()){
           return;
       }
-      console.log(this.state.formData)
       this.newMessage(this.state.formData.message)
       this.resetMessageField();
-      console.log(this.state.formData)
   }
 
 

@@ -29,9 +29,7 @@ export default class Chat extends React.Component {
     this.state = {
       email: this.props.screenProps.user.email,
       error: '',
-      //contacts: [],
-      contacts: ['Jorge', 'Claudia', 'Lautaro'],
-      chatIds: {},
+      contacts: [],
       people: [], 
       users: {},
       }        
@@ -115,17 +113,15 @@ export default class Chat extends React.Component {
             myContacts.push(contact);
           }
       }
-      this.setState({chatIds: myChats})
       this.setState({contacts: myContacts})
   }
 
-  renderContact(contactName){
+  renderContact(contactId){
     return (
         <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}
-        //onPress={() => this.props.navigation.navigate("ChatMessage", {name: contactName})}>
-        onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[contactName], chatId: this.state.chatIds[contactName]})}>
+        onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[contactId], otherUserId: contactId})}>
             <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-              <Text style={{color:'white'}}>Chat with {this.state.users[contactName]}</Text>
+              <Text style={{color:'white'}}>Chat with {this.state.users[contactId]}</Text>
             </View>
         </Button>
     )
