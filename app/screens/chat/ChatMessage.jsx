@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col } from 'native-base';
+import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, Form, Item, Input } from 'native-base';
 import React from "react";
 import Constants from 'expo-constants';
 import {Alert} from 'react-native';
@@ -29,7 +29,7 @@ const FirebaseConfig = {
                      month: "short",  
                      day: "numeric" };  
  
-    var newDateFormat = new Date(date).toLocaleDateString("en-US", options); 
+    var newDateFormat = new Date(date).toLocaleDateString("fr-CA", options); 
     var newTimeFormat = new Date(date).toLocaleTimeString();  
     var dateAndTime = newDateFormat +' ' + newTimeFormat        
    return dateAndTime
@@ -46,6 +46,9 @@ export default class ChatMessage extends React.Component {
       name: this.props.navigation.getParam('name', 'blank'),
       chatId: this.props.navigation.getParam('chatId', 'blank'),
       messageList: [],
+      formData: {
+          message:''
+      },
       }        
   }
 
@@ -55,6 +58,24 @@ export default class ChatMessage extends React.Component {
     }
     firebase.initializeApp(FirebaseConfig);
     
+  }
+
+  handleInputChange = (event, property) => {
+    let newState = { ...this.state};
+    newState.formData[property] = event.nativeEvent.text;
+    this.setState(newState);
+}
+
+  newMessage(messageText){
+    let myList = this.state.messageList
+    myList.push({
+      sayer: this.props.screenProps.user.id.toString(),
+      text: messageText,
+      time: new Date()
+  })
+    myList.sort((a,b) => (a.time > b.time) ? 1: -1);
+    this.setState({messageList: myList})
+    //console.log(myList)
   }
 
   async componentDidMount(){
@@ -90,16 +111,14 @@ export default class ChatMessage extends React.Component {
     let myList = []
     console.log('______________________');
     let messageList = mockdb.chats[chatId]
-    //console.log(messageList);
     for (var sayer in messageList){
         for (var messagesayer in messageList[sayer]){
             for (var message in messageList[sayer][messagesayer]){
                 let m = messageList[sayer][messagesayer][message];
                 let messageText = m.text;
                 let messageTime = m.created
-                let datet = dateConvertor(messageTime);
+                let datet = new Date(messageTime)
                 console.log(messagesayer + ' ' + messageText + ' ' + messageTime)
-                //console.log(datet)
                 myList.push({
                     sayer: messagesayer,
                     text: messageText,
@@ -109,10 +128,7 @@ export default class ChatMessage extends React.Component {
         }
     }
     myList.sort((a,b) => (a.time > b.time) ? 1: -1);
-    //console.log(myList.length)
-    //console.log(myList[0])
     this.setState({messageList: myList})
-    console.log(this.state.messageList.length)
   }
 
   componentDidUpdate(prevProps, prevState, snapshot){
@@ -121,18 +137,44 @@ export default class ChatMessage extends React.Component {
         this.setState({name: this.props.navigation.getParam('name', 'blank')})
         this.setState({chatId: chatId})
         this.reloadMessages(chatId);
+        this.resetMessageField();
       }
       
     }   
 
+    validForm(){
+      if(this.state.formData.message == ''){
+          return false;
+      }
+      return true;
+  }
+
+  resetMessageField(){
+    this.setState({formData: {message: ''}})
+  }
+
+    send = async() => {
+      this.setState({error: ''})
+      if(!this.validForm()){
+          return;
+      }
+      console.log(this.state.formData)
+      this.newMessage(this.state.formData.message)
+      this.resetMessageField();
+      console.log(this.state.formData)
+  }
+
+
     renderMessage(message){
         let sayerAlign = 'left';
+        let sayer = this.state.name + ': '
         if (message.sayer == this.props.screenProps.user.id){
             sayerAlign = 'right';
+            sayer = ''
         }
         return (
           <Text style={{minWidth: '70%', textAlign: sayerAlign}}>
-              {message.text}
+              {sayer}{message.text}
           </Text>
         )
     }
@@ -152,9 +194,21 @@ export default class ChatMessage extends React.Component {
             <Text></Text>
             {this.state.messageList.map(this.renderMessage, this)}
             <Text></Text>
-            <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={() => this.props.navigation.navigate("Chat")}>
+
+            <Form style={{marginBottom:20, minWidth: '70%'}}>
+              <Item>
+                <Input placeholder={'Say'} onChange={ (e) => this.handleInputChange(e, 'message')}/>
+              </Item>
+              
+              </Form>
+            <Button primary disabled={!this.validForm()} style={{ alignSelf: "center", marginBottom:10, width:70 }}onPress={this.send}>
                 <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-                  <Text style={{color:'white'}}>Return to chat list</Text>
+                  <Text style={{color:'white'}}>Send</Text>
+                </View>
+            </Button>
+            <Button primary style={{ alignSelf: "center", marginBottom:10, width:80 }}onPress={() => this.props.navigation.navigate("Chat")}>
+                <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                  <Text style={{color:'white'}}>Return</Text>
                 </View>
             </Button>
         </Body>
