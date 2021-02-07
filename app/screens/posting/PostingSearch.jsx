@@ -7,6 +7,7 @@ import moment from 'moment';
 import { Image } from 'react-native';
 import * as Location from 'expo-location';
 import  * as Permissions from 'expo-permissions';
+import CountryDropdown from '../../components/CountryDropdown';
 
 const postingImage = require("../../assets/degoas.png");
 
@@ -20,19 +21,22 @@ export default class PostingSearch extends React.Component {
           error: '',
           fetching: true,
           activeTab: 'filters',
+          covidWarn: undefined,
           filtersForm: {
             priceMin: null,
             priceMax: null,
             startDate: null,
             endDate: null,
-            feature:''
+            feature:'',
+            country:'AR'
           }
         } 
         this.setEndDate = this.setEndDate.bind(this);
         this.setStartDate = this.setStartDate.bind(this);
         this.toggleCheckbox = this.toggleCheckbox.bind(this);
         this.applyFilters = this.applyFilters.bind(this);    
-        this.getNearbyPostings = this.getNearbyPostings.bind(this);   
+        this.getNearbyPostings = this.getNearbyPostings.bind(this);
+        this.onCountryChange = this.onCountryChange.bind(this);      
       }
 
       async componentDidMount(){
@@ -135,6 +139,24 @@ export default class PostingSearch extends React.Component {
         this.setState({filtersForm: newFormData});        
       }
 
+      getCovidWarning = async () => {
+        let covidResponse = await get(Constants.manifest.extra.covidWarnEndpoint + encodeURIComponent(this.state.filtersForm.country))
+        if(covidResponse.status == 200){
+          let json = await covidResponse.json();
+          this.setState({covidWarn: json})
+        }
+      }
+
+      onCountryChange(value) {
+        let newState = { ...this.state};
+        newState.filtersForm.country = value;
+        newState.covidWarn = undefined;
+        this.setState({
+            newState
+        });
+        this.getCovidWarning()
+      }
+
   render() {
     return <Container>
         <Header hasSegment>
@@ -153,6 +175,8 @@ export default class PostingSearch extends React.Component {
         {this.state.activeTab === 'filters' && (
           <Content>
         <Content style={{borderWidth: 4, borderColor: "#3F51B5", margin: 5, borderRadius: 6}}>
+        <H3 style={{marginTop:20, marginLeft: 10}}>Select Country:</H3>
+        <CountryDropdown placeholder="Country" selected={this.state.filtersForm.country} onValueChange={this.onCountryChange}/>
         <Content padder style={{ backgroundColor: "#fff"}}>
         <Text>Check In</Text>
           <DatePicker
@@ -224,6 +248,13 @@ export default class PostingSearch extends React.Component {
         {this.state.activeTab === 'results' && (
           <Content>            
             { this.state.fetching && <Spinner color='blue' />}
+            { this.state.covidWarn && 
+            <Content style={{borderWidth: 4, 
+            borderColor: this.state.covidWarn.Color == "Yellow" ? "#ffff00" : 
+            this.state.covidWarn.Color == "Green" ? "#008000" :
+            this.state.covidWarn.Color == "Orange" ? "#ffa500" : "#ff0000", margin: 10, padding: 10, borderRadius: 6}}>
+              <Text style={{fontWeight: 'bold'}}>Covid Status: {this.state.covidWarn.Message}</Text>
+            </Content>}
             { !this.state.fetching && this.state.postings.map((posting,index) => (
              <ListItem key={'posting-' + posting.id_posting} button 
             onPress={()=> this.goToBooking(posting.id_posting)}>

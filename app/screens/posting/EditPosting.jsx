@@ -21,7 +21,7 @@ export default class EditPosting extends React.Component {
                 name: '',
                 latitude: 0,
                 longitude:0,
-                country:'Argentina',
+                country:'AR',
                 city: '',
                 max_number_guests: 1
             },
