@@ -150,10 +150,7 @@ export default class Posting extends React.Component {
             </Item>
             <Item>
               <CitiesDropdown placeholder="City" selected={this.state.formData.city} selectedCountryCode={this.state.formData.country} onValueChange={this.onCityChange}/>
-            </Item>
-            {/* <Item>
-              <Input placeholder="City" onChange={ (e) => this.handleInputChange(e, 'city')}/>
-            </Item> */}
+            </Item>            
             <H3 style={{marginTop:20, marginLeft: 10}}>Location Latitude</H3>
             <Item>
               <Input label='Latitude' placeholder="Latitude" keyboardType='numeric' onChange={ (e) => this.handleNumberChange(e, 'latitude')}/>
