@@ -12,18 +12,6 @@ import firebase from "firebase/app";
 import mockdb from "./mockdb.json"
 
 
-const FirebaseConfig = {
-    apiKey: "AIzaSyDM2NPGRMQspGMEv2znm0kOuBL3iWOzPWI",
-    appId: "1:481615734249:android:4b1c1c33582e15be4a9778",
-    projectId: "bookbnb-degoas-ed",
-    authDomain: "bookbnb-degoas-ed.firebaseapp.com",
-    databaseURL: "https://bookbnb-degoas-ed.firebaseio.com",
-    storageBucket: "bookbnb-degoas-ed.appspot.com",
-    messagingSenderId: "481615734249",
-  }
-  
-
-
 export default class ChatMessage extends React.Component {
   constructor(props) {
     super(props);
@@ -38,14 +26,6 @@ export default class ChatMessage extends React.Component {
           message:''
       },
       }        
-  }
-
-  async initializeFirebase(){
-    if (firebase.apps.length) {
-        await firebase.app().delete();
-    }
-    firebase.initializeApp(FirebaseConfig);
-    
   }
 
   handleInputChange = (event, property) => {
@@ -69,7 +49,6 @@ export default class ChatMessage extends React.Component {
     let chatId = this.getChatId(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
     this.setState({name: this.props.navigation.getParam('name', 'blank')})
     this.setState({chatId: chatId})
-    this.initializeFirebase();
     this.reloadMessages(chatId);
     this.getUser
   }

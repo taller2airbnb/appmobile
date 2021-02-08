@@ -7,20 +7,7 @@ import {get} from '../../api/ApiHelper';
 import 'firebase/firestore';
 import 'firebase/auth';
 import 'firebase/database';
-
 import firebase from "firebase/app";
-
-const FirebaseConfig = {
-    apiKey: "AIzaSyDM2NPGRMQspGMEv2znm0kOuBL3iWOzPWI",
-    appId: "1:481615734249:android:4b1c1c33582e15be4a9778",
-    projectId: "bookbnb-degoas-ed",
-    authDomain: "bookbnb-degoas-ed.firebaseapp.com",
-    databaseURL: "https://bookbnb-degoas-ed.firebaseio.com",
-    storageBucket: "bookbnb-degoas-ed.appspot.com",
-    messagingSenderId: "481615734249",
-  }
-  
-import mockdb from "./mockdb.json"
 
 
 export default class Chat extends React.Component {
@@ -35,41 +22,9 @@ export default class Chat extends React.Component {
       }        
   }
 
-  async initializeFirebase(){
-    if (firebase.apps.length) {
-        await firebase.app().delete();
-    }
-    firebase.initializeApp(FirebaseConfig);
-  }
-
-  async checkFirebase(){
-    const myItems = firebase.database().ref('items');
-    console.log(myItems)
-    myItems.on('value', datasnap=>{
-        console.log(datasnap.val())
-    })
-  }
-
   async componentDidMount(){
     this.getUserInfo();
-    this.initializeFirebase();
-    //let dfref = firebase.database().ref('est');
-    
-    const myItems = firebase.database().ref('items');
-    console.log(myItems)
-    myItems.on('value', datasnap=>{
-        console.log(datasnap.val())
-    })
-
-
-    //firebase.database().ref('test').on("value", snapshot => {
-    //    let myList = [];
-    //    snapshot.forEach(snap => {
-    //        myList.push(snap.val());
-    //    });
-    //    this.setState({people: myList})
-    //}) 
-    this.getContacts();
+    this.getFirebaseContacts();
   }
 
   async getUserInfo(){
@@ -92,28 +47,31 @@ export default class Chat extends React.Component {
     return(userDict)
   }
 
-  async getContacts(){
-      let myId = this.props.screenProps.user.id.toString();
-      let myContacts = [];
-      let userList = [];
-      let contact = '';
-      let myChats = {};
-      let contactInfo = {};
-      let pairingList = mockdb.pairings;
-      for (var pairing in pairingList) {
-        userList = pairingList[pairing].users
-          if (userList.includes(myId)){
-            if (userList[0]!=myId){
-                contact = userList[0];
-            }
-            else{
-                contact = userList[1];
-            }
-            myChats[contact] = pairingList[pairing].chat
-            myContacts.push(contact);
-          }
+  async getFirebaseContacts(){
+    let myContacts = [];
+    let myId = Number(this.props.screenProps.user.id);
+    let contact = 0;
+    console.log('__________________')
+    //getting chat pairing data from firebase
+    let data = {};
+    const dataRef = firebase.database().ref('pairings');
+    dataRef.on('value', datasnap=>{
+        data = datasnap.val()
+    })
+    //organizing the contacts for this user
+    for (var pairing in data){
+      let userIds = data[pairing]
+      if (userIds.includes(myId)){
+        if (userIds[0]!=myId){
+          contact = userIds[0];
+        }
+        else{
+          contact = userIds[1];
+        }
+        myContacts.push(contact.toString());
       }
-      this.setState({contacts: myContacts})
+    }
+    this.setState({contacts: myContacts})
   }
 
   renderContact(contactId){
