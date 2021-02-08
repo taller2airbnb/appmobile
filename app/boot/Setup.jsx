@@ -6,6 +6,19 @@ import { Ionicons } from '@expo/vector-icons';
 import MainApp from "../components/MainApp";
 import getTheme from "../theme/components";
 import variables from "../theme/variables/commonColor";
+import firebase from "firebase/app";
+
+const FirebaseConfig = {
+  apiKey: "AIzaSyDM2NPGRMQspGMEv2znm0kOuBL3iWOzPWI",
+  appId: "1:481615734249:android:4b1c1c33582e15be4a9778",
+  projectId: "bookbnb-degoas-ed",
+  authDomain: "bookbnb-degoas-ed.firebaseapp.com",
+  databaseURL: "https://bookbnb-degoas-ed.firebaseio.com",
+  storageBucket: "bookbnb-degoas-ed.appspot.com",
+  messagingSenderId: "481615734249",
+}
+
+firebase.initializeApp(FirebaseConfig);
 
 export default class Setup extends Component {
   constructor() {

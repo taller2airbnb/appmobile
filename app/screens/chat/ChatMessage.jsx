@@ -46,10 +46,10 @@ export default class ChatMessage extends React.Component {
   }
 
   async componentDidMount(){
-    let chatId = this.getChatId(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
+    let chatId = this.getChatIdFromFirebase(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
     this.setState({name: this.props.navigation.getParam('name', 'blank')})
     this.setState({chatId: chatId})
-    this.reloadMessages(chatId);
+    this.loadMessagesFromFirebase(chatId);
     this.getUser
   }
 
@@ -73,54 +73,68 @@ export default class ChatMessage extends React.Component {
     return(userDict)
   }
 
-  getChatId(user1, user2){
-    let userList = [];
-    let pairingList = mockdb.pairings;
-    for (var pairing in pairingList) {
-      userList = pairingList[pairing].users
-      console.log('userList')
-      console.log(userList)
-      if (userList.includes(user1) && userList.includes(user2)){
-        
-        console.log('Match!')
-        console.log(pairingList[pairing].chat)
-        return (pairingList[pairing].chat)
+  getChatIdFromFirebase(user1, user2){
+    let id1 = Number(user1);
+    let id2 = Number(user2);
+    //getting chat pairing data from firebase
+    let data = {};
+    const dataRef = firebase.database().ref('pairings');
+    dataRef.on('value', datasnap=>{
+        data = datasnap.val()
+    })
+    //checking data for matching chat id
+    for (var pairing in data) {
+      let userList = data[pairing];
+      if (userList.includes(id1) && userList.includes(id2)){
+        return (pairing)
       }
     }
   }
 
 
-  reloadMessages(chatId){
-    let myList = []
-    console.log('______________________');
-    let messageList = mockdb.chats[chatId]
-    for (var sayer in messageList){
-        for (var messagesayer in messageList[sayer]){
-            for (var message in messageList[sayer][messagesayer]){
-                let m = messageList[sayer][messagesayer][message];
-                let messageText = m.text;
-                let messageTime = m.created
-                let datet = new Date(messageTime)
-                console.log(messagesayer + ' ' + messageText + ' ' + messageTime)
-                myList.push({
-                    sayer: messagesayer,
-                    text: messageText,
-                    time: datet
-                })
-            }
+  loadMessagesFromFirebase(chatId){
+    let messageList = []
+    let data = {};
+    let message = {};
+    const dataRef = firebase.database().ref('chats');
+    dataRef.on('value', datasnap=>{
+        data = datasnap.val()
+    })
+    let messages = data[chatId]
+    for (var sayer in messages){
+      if (messages[sayer].length>=1){
+        for (var messageId in messages[sayer]){
+          message = messages[sayer][messageId]
+          messageList.push({
+            sayer: sayer,
+            text: message.text,
+            time: new Date(message.created)
+          })
         }
+        console.log("mult")
+      }
+      else{
+        message = messages[sayer]
+        messageList.push({
+          sayer: sayer,
+          text: message.text,
+          time: new Date(message.created)
+        })
+        console.log("single")
+      }
     }
-    myList.sort((a,b) => (a.time > b.time) ? 1: -1);
-    this.setState({messageList: myList})
+    messageList.sort((a,b) => (a.time > b.time) ? 1: -1);
+    console.log(messageList)
+    this.setState({messageList: messageList})
   }
 
+
   componentDidUpdate(prevProps, prevState, snapshot){
-    console.log('other user id: ' + this.props.navigation.getParam('otherUserId', 'blank'))
-    let chatId = this.getChatId(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
+    let chatId = this.getChatIdFromFirebase(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
     if(prevProps.navigation !== this.props.navigation){
         this.setState({name: this.props.navigation.getParam('name', 'blank')})
         this.setState({chatId: chatId})
-        this.reloadMessages(chatId);
+        this.loadMessagesFromFirebase(chatId);
         this.resetMessageField();
       }
       
