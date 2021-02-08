@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, Form, Item, Input } from 'native-base';
+import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, Form, Icon, Item, Input, Left} from 'native-base';
 import React from "react";
 import Constants from 'expo-constants';
 import {Alert} from 'react-native';
@@ -19,9 +19,7 @@ export default class ChatMessage extends React.Component {
       name: this.props.navigation.getParam('name', 'blank'),
       chatId: '',
       messageList: [],
-      formData: {
-          message:''
-      },
+      text: '',
       }        
   }
 
@@ -55,7 +53,7 @@ export default class ChatMessage extends React.Component {
   sendMessageToFirebase(chatId, userId){
     chatId = this.state.chatId
     userId = this.props.screenProps.user.id.toString()
-    let newMessage = {created: new Date().toJSON(), text: this.state.formData.message}
+    let newMessage = {created: new Date().toJSON(), text: this.state.text}
     //getting messages data from firebase
     let data = {};
     let dataRef = firebase.database().ref('chats');
@@ -69,13 +67,8 @@ export default class ChatMessage extends React.Component {
       dataRef.set(data)
     }
     this.loadMessagesFromFirebase(chatId);
+    this.resetMessageField();
   }
-
-  handleInputChange = (event, property) => {
-    let newState = { ...this.state};
-    newState.formData[property] = event.nativeEvent.text;
-    this.setState(newState);
-}
 
   newMessage(messageText){
     let myList = this.state.messageList
@@ -144,6 +137,7 @@ export default class ChatMessage extends React.Component {
     }
     //if there's no return yet, the chat is missing. We will create it:
     if (data != null && data != {}){
+      console.log(data)
       return(this.createNewChatId(id1, id2, data))
     }
   }
@@ -194,47 +188,42 @@ export default class ChatMessage extends React.Component {
       
     }   
 
-    validForm(){
-      if(this.state.formData.message == ''){
-          return false;
-      }
-      return true;
+  validForm(){
+    if(this.state.text == ''){
+        return false;
+    }
+    return true;
   }
 
   resetMessageField(){
-    this.setState({formData: {message: ''}})
+    this.setState({text: ''})
   }
 
-    send = async() => {
-      this.setState({error: ''})
-      if(!this.validForm()){
-          return;
+  renderMessage(message){
+      let sayerAlign = 'left';
+      let sayer = this.state.name + ': '
+      if (message.sayer == this.props.screenProps.user.id){
+          sayerAlign = 'right';
+          sayer = ''
       }
-      this.newMessage(this.state.formData.message)
-      this.resetMessageField();
+      return (
+        <Text style={{minWidth: '70%', textAlign: sayerAlign}}>
+            {sayer}{message.text}
+        </Text>
+      )
   }
-
-
-    renderMessage(message){
-        let sayerAlign = 'left';
-        let sayer = this.state.name + ': '
-        if (message.sayer == this.props.screenProps.user.id){
-            sayerAlign = 'right';
-            sayer = ''
-        }
-        return (
-          <Text style={{minWidth: '70%', textAlign: sayerAlign}}>
-              {sayer}{message.text}
-          </Text>
-        )
-    }
 
   render() {
     return <Container>
-      <Header>
-      <Body style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-        <Title>Message with {this.state.name}</Title>
-      </Body>
+      <Header>          
+        <Left>
+          <Button primary style={{ alignSelf: "center", width:80 }}onPress={() => this.props.navigation.navigate("Chat")}>
+            <Text>Back</Text>
+          </Button>
+        </Left>
+        <Body style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+            <Title>Message with {this.state.name}</Title>
+        </Body>
       </Header>
       <Content>
         <Body>
@@ -244,23 +233,27 @@ export default class ChatMessage extends React.Component {
             <Text></Text>
             {this.state.messageList.map(this.renderMessage, this)}
             <Text></Text>
+            <Row>
+              <Col style={{minWidth:'60%', alignItems: "center"}}>
+                <Item rounded>
+                  <Input 
+                  style={{minWidth: '95%', maxWidth: '95%'}}
+                  autoCapitalize='none'
+                  underlineColorAndroid="transparent" 
+                  placeholder={'Write...'}
+                  onChangeText={(text) => this.setState({text})}
+                  value={this.state.text} />
+                </Item>
 
-            <Form style={{marginBottom:20, minWidth: '70%'}}>
-              <Item>
-                <Input placeholder={'Say'} onChange={ (e) => this.handleInputChange(e, 'message')}/>
-              </Item>
-              
-              </Form>
-            <Button primary disabled={!this.validForm()} style={{ alignSelf: "center", marginBottom:10, width:70 }}onPress={this.sendMessageToFirebase.bind(this)}>
-                <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-                  <Text style={{color:'white'}}>Send</Text>
-                </View>
-            </Button>
-            <Button primary style={{ alignSelf: "center", marginBottom:10, width:80 }}onPress={() => this.props.navigation.navigate("Chat")}>
-                <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-                  <Text style={{color:'white'}}>Return</Text>
-                </View>
-            </Button>
+              </Col>
+              <Col>
+                <Button primary disabled={!this.validForm()} style={{ alignSelf: "center", marginBottom:10, width:60 }}onPress={this.sendMessageToFirebase.bind(this)}>
+                  <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                    <Text style={{color:'white'}}>Send</Text>
+                  </View>
+                </Button>
+              </Col>
+            </Row>
         </Body>
       </Content>
     </Container>;
