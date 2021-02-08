@@ -12,24 +12,6 @@ import firebase from "firebase/app";
 const postingImage = require("../../assets/degoas.png");
 
 
-function renderMessage(user, text, you, owner){
-  let sayerAlign = 'left';
-  let sayer = user + ': '
-  if (owner){
-    sayer = user + ' (OWNER): '
-  }
-  if (you){
-      sayerAlign = 'right';
-      sayer = 'You: '
-  }
-  return (
-    <Text style={{marginTop: 5, marginBottom:3, marginLeft: 7, marginRight: 7, minWidth: '70%', textAlign: sayerAlign}}>
-        {sayer}{text}
-    </Text>
-  )
-}
-
-
 export default class Booking extends React.Component {
     constructor(props) {
         super(props);
@@ -82,7 +64,6 @@ export default class Booking extends React.Component {
             data = datasnap.val()
         })
         //check if there's messages for this posting. if so, load
-        console.log(data);
         if (!data[postingId]){
           this.setState({messages: []})
         }
@@ -91,22 +72,68 @@ export default class Booking extends React.Component {
         this.setState({messages: messageList})
       }
 
+      postMessageToFirebase(){
+        let testMessage = {
+          created: new Date().toJSON(),
+          text: 'TEST',
+          user: this.props.screenProps.user.id
+        }
+        const postId = this.state.posting.id_posting
+        //load postings data from firebase
+        let data = {};
+        let dataRef = firebase.database().ref('postings');
+        dataRef.on('value', datasnap=>{
+            data = datasnap.val()
+        })
+        if (data != null && data != {}){
+          if (data[postId]){
+            data[postId].push(testMessage)
+          }
+          else{
+            data[postId] = [testMessage]
+          }
+        }
+        dataRef = firebase.database().ref().child('postings');
+        dataRef.set(data)
+        this.reloadMessagesFromFirebase(postId)
+      }
+
+      renderMessage(message){
+        let userName = this.state.users[message.user]
+        let sayerAlign = 'left';
+        let sayer = userName + ':'
+        if (this.state.posting.id_user == message.user){
+          sayer = userName + ' (OWNER):'
+        }
+        if (message.user == this.props.screenProps.user.id.toString()){
+            sayerAlign = 'right';
+            sayer = 'You:'
+        }
+        return (
+          <Text style={{marginTop: 5, marginBottom:3, marginLeft: 10, marginRight: 10, minWidth: '80%', maxWidth: '80%', textAlign: sayerAlign}}>
+              {sayer} {message.text}
+          </Text>
+        )
+      }
+
       renderComments(item) {
         let messageList = item.content.messages
         messageList.sort((a,b) => (a.created > b.created) ? 1: -1)
-        let userList = item.content.users
-        let yourId = item.content.yourId
-        let owner = item.content.owner
-        if (messageList.length == 0) {
-          return (
-              <Text style={{marginTop: 10, marginBottom: 10, textAlign: 'center'}}>This booking has no messages.</Text>
-          )
-        }
-        else{
         return (
-              <>{messageList.map(message => renderMessage(userList[message.user], message.text, yourId==message.user, owner==message.user))}</>
-        );
-        }
+          <Body>
+            {messageList.length == 0 &&
+              <Text style={{marginTop: 10, marginBottom: 10, textAlign: 'center'}}>This booking has no messages.</Text>
+            }
+            {messageList.length != 0 &&
+              <>{messageList.map(message => this.renderMessage(message))}</>
+            }
+            <Button primary style={{ alignSelf: "center", marginBottom:10, width:130 }} onPress={this.postMessageToFirebase.bind(this)}>
+                <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                  <Text style={{color:'white'}}>Test message</Text>
+                </View>
+            </Button>
+          </Body>
+        )
       }
 
       populateAccordionDetails(){
@@ -270,11 +297,11 @@ export default class Booking extends React.Component {
             renderContent={this._renderContent}
           />
         <Accordion
-            dataArray={[{ title: 'Comments', content: {messages: this.state.messages, users: this.state.users, yourId: this.props.screenProps.user.id.toString(), owner: this.state.posting.id_user}}]}
+            dataArray={[{ title: 'Comments', content: {messages: this.state.messages}}]}
             animation={true}
             expanded={true}
             renderHeader={this._renderHeader}
-            renderContent={this.renderComments}
+            renderContent={this.renderComments.bind(this)}
           />
           <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:200 }}
               onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[this.state.posting.id_user], otherUserId: this.state.posting.id_user})}>
