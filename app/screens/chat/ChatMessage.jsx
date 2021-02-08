@@ -6,10 +6,7 @@ import {NavigationEvents, TabRouter} from 'react-navigation';
 import 'firebase/firestore';
 import 'firebase/auth';
 import 'firebase/database';
-
 import firebase from "firebase/app";
-
-import mockdb from "./mockdb.json"
 
 
 export default class ChatMessage extends React.Component {
@@ -124,7 +121,6 @@ export default class ChatMessage extends React.Component {
       }
     }
     messageList.sort((a,b) => (a.time > b.time) ? 1: -1);
-    console.log(messageList)
     this.setState({messageList: messageList})
   }
 

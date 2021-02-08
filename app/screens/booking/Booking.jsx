@@ -5,10 +5,12 @@ import Constants from 'expo-constants';
 import {post, get} from '../../api/ApiHelper';
 import moment from 'moment';
 import { Image } from 'react-native';
+import 'firebase/firestore';
+import 'firebase/auth';
+import 'firebase/database';
+import firebase from "firebase/app";
 const postingImage = require("../../assets/degoas.png");
 
-
-import mockdb from "./mockdb.json"
 
 function renderMessage(user, text, you, owner){
   let sayerAlign = 'left';
@@ -72,11 +74,19 @@ export default class Booking extends React.Component {
       }  
       }
 
-      async reloadMessages(postingId){
-        if (!mockdb.postings[postingId]){
+      async reloadMessagesFromFirebase(postingId){
+        //load postings data from firebase
+        let data = {};
+        const dataRef = firebase.database().ref('postings');
+        dataRef.on('value', datasnap=>{
+            data = datasnap.val()
+        })
+        //check if there's messages for this posting. if so, load
+        console.log(data);
+        if (!data[postingId]){
           this.setState({messages: []})
         }
-        let messageList = mockdb.postings[postingId]
+        let messageList = data[postingId]
         messageList.sort((a,b) => (a.time > b.time) ? 1: -1)
         this.setState({messages: messageList})
       }
@@ -117,7 +127,7 @@ export default class Booking extends React.Component {
           this.setState({posting: json.message[0]});
           this.populateAccordionDetails();
           this.setState({fetching: false})
-          this.reloadMessages(this.state.posting.id_posting);
+          this.reloadMessagesFromFirebase(this.state.posting.id_posting);
         }else{
           let json = await postingResponse.json();
           this.setState({error: json.message ?? 'Oops! Something went wrong.'});
