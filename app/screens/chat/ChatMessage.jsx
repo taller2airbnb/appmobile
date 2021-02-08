@@ -25,6 +25,40 @@ export default class ChatMessage extends React.Component {
       }        
   }
 
+
+  sendMessageToFirebase(chatId, userId){
+    chatId = '42_5'
+    userId = '42'
+    console.log('armadillo')
+    let newMessage = {created: new Date().toJSON(), text: 'yet another prueba'}
+    let data = {};
+    let dataRef = firebase.database().ref('chats');
+    dataRef.on('value', datasnap=>{
+        data = datasnap.val()
+    })
+    console.log(chatId + '-' + userId)
+    dataRef = firebase.database().ref().child('chats');
+    console.log(data)
+    let test = data[chatId]
+    for (var a in test){
+      if (a == userId){
+        console.log(test[userId])
+        if (test[userId].length>1){
+          data[chatId][userId].push(newMessage)
+        }
+        else{
+          let newData = [test[userId], newMessage]
+          data[chatId][userId].push(newMessage)
+        }
+      }
+    }
+    if(!test[userId]){
+      data[chatId][userId] = [newMessage]
+    }
+    console.log(data)
+    dataRef.set(data)
+  }
+
   handleInputChange = (event, property) => {
     let newState = { ...this.state};
     newState.formData[property] = event.nativeEvent.text;
@@ -108,7 +142,6 @@ export default class ChatMessage extends React.Component {
             time: new Date(message.created)
           })
         }
-        console.log("mult")
       }
       else{
         message = messages[sayer]
@@ -117,7 +150,6 @@ export default class ChatMessage extends React.Component {
           text: message.text,
           time: new Date(message.created)
         })
-        console.log("single")
       }
     }
     messageList.sort((a,b) => (a.time > b.time) ? 1: -1);
@@ -201,6 +233,11 @@ export default class ChatMessage extends React.Component {
             <Button primary style={{ alignSelf: "center", marginBottom:10, width:80 }}onPress={() => this.props.navigation.navigate("Chat")}>
                 <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                   <Text style={{color:'white'}}>Return</Text>
+                </View>
+            </Button>
+            <Button primary style={{ alignSelf: "center", marginBottom:10, width:150 }}onPress={this.sendMessageToFirebase}>
+                <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                  <Text style={{color:'white'}}>Test firebase</Text>
                 </View>
             </Button>
         </Body>
