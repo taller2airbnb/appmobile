@@ -27,19 +27,26 @@ export default class ChatMessage extends React.Component {
 
 
   rewriteFirebaseChatData(data,chatId,thisUserId, newMessage){
-    let thisChatLog = data[chatId]
-    for (var userId in thisChatLog){
-      if (userId == thisUserId){
-        if (thisChatLog[thisUserId].length>1){
-          data[chatId][thisUserId].push(newMessage)
-        }
-        else{
-          data[chatId][thisUserId].push(newMessage)
+    if(data[chatId]){
+      let thisChatLog = data[chatId]
+      for (var userId in thisChatLog){
+        if (userId == thisUserId){
+          if (thisChatLog[thisUserId].length>1){
+            data[chatId][thisUserId].push(newMessage)
+          }
+          else{
+            data[chatId][thisUserId].push(newMessage)
+          }
         }
       }
+      if(!thisChatLog[thisUserId]){
+        data[chatId][thisUserId] = [newMessage]
+      }
     }
-    if(!thisChatLog[thisUserId]){
-      data[chatId][thisUserId] = [newMessage]
+    else{
+      let newChat = {}
+      newChat[thisUserId] = [newMessage]
+      data[chatId] = newChat
     }
     return(data)
   }
@@ -55,10 +62,12 @@ export default class ChatMessage extends React.Component {
     dataRef.on('value', datasnap=>{
         data = datasnap.val()
     })
-    data = this.rewriteFirebaseChatData(data, chatId, userId, newMessage);
-    //writing data to firebase and reloading messages
-    dataRef = firebase.database().ref().child('chats');
-    dataRef.set(data)
+    if (data != null && data != {}){
+      data = this.rewriteFirebaseChatData(data, chatId, userId, newMessage);
+      //writing data to firebase and reloading messages
+      dataRef = firebase.database().ref().child('chats');
+      dataRef.set(data)
+    }
     this.loadMessagesFromFirebase(chatId);
   }
 
@@ -107,6 +116,16 @@ export default class ChatMessage extends React.Component {
     return(userDict)
   }
 
+  createNewChatId(user1, user2, data){
+    let newChatId = user1.toString() + '_' + user2.toString()
+    console.log('Chat missing. Creating chat.')
+    data[newChatId] = [user1, user2]
+    let dataRef = firebase.database().ref().child('pairings');
+    dataRef.set(data)
+    console.log('Chat created.')
+    return newChatId
+  }
+
   getChatIdFromFirebase(user1, user2){
     let id1 = Number(user1);
     let id2 = Number(user2);
@@ -122,6 +141,10 @@ export default class ChatMessage extends React.Component {
       if (userList.includes(id1) && userList.includes(id2)){
         return (pairing)
       }
+    }
+    //if there's no return yet, the chat is missing. We will create it:
+    if (data != null && data != {}){
+      return(this.createNewChatId(id1, id2, data))
     }
   }
 
@@ -161,8 +184,8 @@ export default class ChatMessage extends React.Component {
 
 
   componentDidUpdate(prevProps, prevState, snapshot){
-    let chatId = this.getChatIdFromFirebase(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
     if(prevProps.navigation !== this.props.navigation){
+        let chatId = this.getChatIdFromFirebase(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
         this.setState({name: this.props.navigation.getParam('name', 'blank')})
         this.setState({chatId: chatId})
         this.loadMessagesFromFirebase(chatId);

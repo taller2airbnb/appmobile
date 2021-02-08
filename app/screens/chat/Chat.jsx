@@ -40,6 +40,12 @@ export default class Chat extends React.Component {
     
   }
 
+  componentDidUpdate(prevProps){
+    if(prevProps.navigation !== this.props.navigation){
+      this.getFirebaseContacts();
+    }
+  }
+
   async componentDidMount(){
     this.getUserInfo();
     this.initializeFirebase();
@@ -78,6 +84,7 @@ export default class Chat extends React.Component {
     dataRef.on('value', datasnap=>{
         data = datasnap.val()
     })
+    console.log(data)
     //organizing the contacts for this user
     for (var pairing in data){
       let userIds = data[pairing]
