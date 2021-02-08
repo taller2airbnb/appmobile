@@ -26,37 +26,40 @@ export default class ChatMessage extends React.Component {
   }
 
 
+  rewriteFirebaseChatData(data,chatId,thisUserId, newMessage){
+    let thisChatLog = data[chatId]
+    for (var userId in thisChatLog){
+      if (userId == thisUserId){
+        if (thisChatLog[thisUserId].length>1){
+          data[chatId][thisUserId].push(newMessage)
+        }
+        else{
+          data[chatId][thisUserId].push(newMessage)
+        }
+      }
+    }
+    if(!thisChatLog[thisUserId]){
+      data[chatId][thisUserId] = [newMessage]
+    }
+    return(data)
+  }
+
+
   sendMessageToFirebase(chatId, userId){
-    chatId = '42_5'
-    userId = '42'
-    console.log('armadillo')
-    let newMessage = {created: new Date().toJSON(), text: 'yet another prueba'}
+    chatId = this.state.chatId
+    userId = this.props.screenProps.user.id.toString()
+    let newMessage = {created: new Date().toJSON(), text: this.state.formData.message}
+    //getting messages data from firebase
     let data = {};
     let dataRef = firebase.database().ref('chats');
     dataRef.on('value', datasnap=>{
         data = datasnap.val()
     })
-    console.log(chatId + '-' + userId)
+    data = this.rewriteFirebaseChatData(data, chatId, userId, newMessage);
+    //writing data to firebase and reloading messages
     dataRef = firebase.database().ref().child('chats');
-    console.log(data)
-    let test = data[chatId]
-    for (var a in test){
-      if (a == userId){
-        console.log(test[userId])
-        if (test[userId].length>1){
-          data[chatId][userId].push(newMessage)
-        }
-        else{
-          let newData = [test[userId], newMessage]
-          data[chatId][userId].push(newMessage)
-        }
-      }
-    }
-    if(!test[userId]){
-      data[chatId][userId] = [newMessage]
-    }
-    console.log(data)
     dataRef.set(data)
+    this.loadMessagesFromFirebase(chatId);
   }
 
   handleInputChange = (event, property) => {
@@ -225,7 +228,7 @@ export default class ChatMessage extends React.Component {
               </Item>
               
               </Form>
-            <Button primary disabled={!this.validForm()} style={{ alignSelf: "center", marginBottom:10, width:70 }}onPress={this.send}>
+            <Button primary disabled={!this.validForm()} style={{ alignSelf: "center", marginBottom:10, width:70 }}onPress={this.sendMessageToFirebase.bind(this)}>
                 <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                   <Text style={{color:'white'}}>Send</Text>
                 </View>
@@ -233,11 +236,6 @@ export default class ChatMessage extends React.Component {
             <Button primary style={{ alignSelf: "center", marginBottom:10, width:80 }}onPress={() => this.props.navigation.navigate("Chat")}>
                 <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                   <Text style={{color:'white'}}>Return</Text>
-                </View>
-            </Button>
-            <Button primary style={{ alignSelf: "center", marginBottom:10, width:150 }}onPress={this.sendMessageToFirebase}>
-                <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-                  <Text style={{color:'white'}}>Test firebase</Text>
                 </View>
             </Button>
         </Body>
