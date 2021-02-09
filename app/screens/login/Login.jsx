@@ -30,7 +30,7 @@ export default class Login extends React.Component {
     if(response.status == 200){
       let json = await response.json();
       this.props.screenProps.handleLogIn({...json.message, accessToken: json.token});
-      this.props.navigation.navigate('Home');
+      
       }else{
       let json = await response.json();
       this.setState({error: json.message ?? 'Oops! Something went wrong.'})
@@ -67,7 +67,7 @@ export default class Login extends React.Component {
         if(response.status == 200){
           let json = await response.json();
           this.props.screenProps.handleLogIn({...json.message, accessToken: json.token});          
-          this.props.navigation.navigate('Home');
+          
       }else{
           let json = await response.json();
           this.setState({error: json.message ?? 'Oops! Something went wrong.'})

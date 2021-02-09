@@ -64,7 +64,7 @@ export default class MyBookings extends React.Component {
           <Content>
             { this.state.fetching && <Spinner color='blue' />}
             { !this.state.fetching && this.state.confirmedBookings.map((booking,index) => (
-             <ListItem key={'posting-' + booking.id_posting} button 
+             <ListItem key={'posting-' + booking.id_posting + '_' +index} button 
             onPress={()=> this.goToBooking(booking.id_posting)}>
             <Card style={{flex: 1}}>
             <CardItem style={{flex: 1}}>
@@ -105,7 +105,7 @@ export default class MyBookings extends React.Component {
           <Content>            
             { this.state.fetching && <Spinner color='blue' />}
             { !this.state.fetching && this.state.pendingBookings.map((booking,index) => (
-             <ListItem key={'posting-' + booking.id_posting} button 
+             <ListItem key={'posting-' + booking.id_posting + '_' + index} button 
             onPress={()=> this.goToBooking(booking.id_posting)}>
             <Card style={{flex: 1}}>
             <CardItem style={{flex: 1}}>
