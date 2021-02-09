@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col } from 'native-base';
+import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, List} from 'native-base';
 import React from "react";
 import Constants from 'expo-constants';
 import {Alert} from 'react-native';
@@ -42,6 +42,7 @@ export default class Chat extends React.Component {
 
   componentDidUpdate(prevProps){
     if(prevProps.navigation !== this.props.navigation){
+      //this.initializeFirebase();
       this.getFirebaseContacts();
     }
   }
@@ -103,12 +104,12 @@ export default class Chat extends React.Component {
 
   renderContact(contactId){
     return (
-        <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}
+      <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}
         onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[contactId], otherUserId: contactId})}>
-            <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-              <Text style={{color:'white'}}>Chat with {this.state.users[contactId]}</Text>
-            </View>
-        </Button>
+        <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+          <Text style={{color:'white'}}>Chat with {this.state.users[contactId]}</Text>
+        </View>
+      </Button>
     )
 }
 
@@ -121,11 +122,19 @@ export default class Chat extends React.Component {
       </Header>
       <Content>
         <Body>
+            {(this.state.contacts.length == 0) &&
+              <Body>
+                <Content padder></Content>
+                <Text>
+                  You have not started any conversations.
+                </Text>
+              </Body>
+            }
+            <Content padder></Content>
+            {this.state.contacts.map(this.renderContact, this)}
             {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
             <Text style={{color:'red'}}>{this.state.error}</Text>
             </View>}
-            <Text></Text>
-            {this.state.contacts.map(this.renderContact, this)}
         </Body>
       </Content>
     </Container>;

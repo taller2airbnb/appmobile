@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Spinner, Accordion, Button, Body, Icon, Text, View, DatePicker, H3 } from 'native-base';
+import { Container, Header, Title, Content, Spinner, Accordion, Button, Body, Icon, Text, View, DatePicker, H3, Row, Col, Input, Item } from 'native-base';
 import {Alert} from 'react-native';
 import React from "react";
 import Constants from 'expo-constants';
@@ -31,6 +31,7 @@ export default class Booking extends React.Component {
           fetching: true,
           users: {},
           messages: [],
+          textInput: '',
         }        
         this.setEndDate = this.setEndDate.bind(this);
         this.setStartDate = this.setStartDate.bind(this);
@@ -56,6 +57,17 @@ export default class Booking extends React.Component {
       }  
       }
 
+      validTextInput(){
+        if(this.state.textInput == ''){
+            return false;
+        }
+        return true;
+      }
+
+      resetMessageField(){
+        this.setState({textInput: ''})
+      }
+
       async reloadMessagesFromFirebase(postingId){
         //load postings data from firebase
         let data = {};
@@ -75,7 +87,7 @@ export default class Booking extends React.Component {
       postMessageToFirebase(){
         let testMessage = {
           created: new Date().toJSON(),
-          text: 'TEST',
+          text: this.state.textInput,
           user: this.props.screenProps.user.id
         }
         const postId = this.state.posting.id_posting
@@ -96,6 +108,7 @@ export default class Booking extends React.Component {
         dataRef = firebase.database().ref().child('postings');
         dataRef.set(data)
         this.reloadMessagesFromFirebase(postId)
+        this.resetMessageField();
       }
 
       renderMessage(message){
@@ -127,11 +140,27 @@ export default class Booking extends React.Component {
             {messageList.length != 0 &&
               <>{messageList.map(message => this.renderMessage(message))}</>
             }
-            <Button primary style={{ alignSelf: "center", marginBottom:10, width:130 }} onPress={this.postMessageToFirebase.bind(this)}>
-                <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-                  <Text style={{color:'white'}}>Test message</Text>
-                </View>
-            </Button>
+            <Row>
+              <Col style={{minWidth:'60%', alignItems: "center"}}>
+                <Item rounded>
+                  <Input 
+                  style={{minWidth: '95%', maxWidth: '95%'}}
+                  autoCapitalize='none'
+                  underlineColorAndroid="transparent" 
+                  placeholder={'Write...'}
+                  onChangeText={(textInput) => this.setState({textInput})}
+                  value={this.state.textInput} />
+                </Item>
+
+              </Col>
+              <Col>
+                <Button primary disabled={!this.validTextInput()} style={{ alignSelf: "center", marginBottom:10, width:60 }}onPress={this.postMessageToFirebase.bind(this)}>
+                  <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                    <Text style={{color:'white'}}>Send</Text>
+                  </View>
+                </Button>
+              </Col>
+            </Row>
           </Body>
         )
       }
@@ -165,6 +194,7 @@ export default class Booking extends React.Component {
         if(prevProps.navigation.getParam('postingId') !== this.props.navigation.getParam('postingId')){          
           this.setState(this.initialState());
           this.getPosting();
+          this.resetMessageField();
         }    
       }
 

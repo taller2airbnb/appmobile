@@ -19,7 +19,7 @@ export default class ChatMessage extends React.Component {
       name: this.props.navigation.getParam('name', 'blank'),
       chatId: '',
       messageList: [],
-      text: '',
+      textInput: '',
       }        
   }
 
@@ -53,7 +53,7 @@ export default class ChatMessage extends React.Component {
   sendMessageToFirebase(chatId, userId){
     chatId = this.state.chatId
     userId = this.props.screenProps.user.id.toString()
-    let newMessage = {created: new Date().toJSON(), text: this.state.text}
+    let newMessage = {created: new Date().toJSON(), text: this.state.textInput}
     //getting messages data from firebase
     let data = {};
     let dataRef = firebase.database().ref('chats');
@@ -189,14 +189,14 @@ export default class ChatMessage extends React.Component {
     }   
 
   validForm(){
-    if(this.state.text == ''){
+    if(this.state.textInput == ''){
         return false;
     }
     return true;
   }
 
   resetMessageField(){
-    this.setState({text: ''})
+    this.setState({textInput: ''})
   }
 
   renderMessage(message){
@@ -241,8 +241,8 @@ export default class ChatMessage extends React.Component {
                   autoCapitalize='none'
                   underlineColorAndroid="transparent" 
                   placeholder={'Write...'}
-                  onChangeText={(text) => this.setState({text})}
-                  value={this.state.text} />
+                  onChangeText={(textInput) => this.setState({textInput})}
+                  value={this.state.textInput} />
                 </Item>
 
               </Col>
