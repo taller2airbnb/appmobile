@@ -71,15 +71,15 @@ export default class Booking extends React.Component {
       async reloadMessagesFromFirebase(postingId){
         //load postings data from firebase
         let data = {};
-        const dataRef = firebase.database().ref('postings');
+        const dataRef = firebase.database().ref('postings').child(postingId);
         dataRef.on('value', datasnap=>{
             data = datasnap.val()
         })
-        //check if there's messages for this posting. if so, load
-        if (!data[postingId]){
-          this.setState({messages: []})
+        //if there are messages for this posting, load them to messageList.
+        let messageList = []
+        if (data != null && data != []){
+          messageList = data
         }
-        let messageList = data[postingId]
         messageList.sort((a,b) => (a.time > b.time) ? 1: -1)
         this.setState({messages: messageList})
       }
@@ -91,21 +91,18 @@ export default class Booking extends React.Component {
           user: this.props.screenProps.user.id
         }
         const postId = this.state.posting.id_posting
-        //load postings data from firebase
+        //load data from this posting from firebase
         let data = {};
-        let dataRef = firebase.database().ref('postings');
+        let dataRef = firebase.database().ref('postings').child(postId);
         dataRef.on('value', datasnap=>{
             data = datasnap.val()
         })
         if (data != null && data != {}){
-          if (data[postId]){
-            data[postId].push(testMessage)
-          }
-          else{
-            data[postId] = [testMessage]
-          }
+          data.push(testMessage)
         }
-        dataRef = firebase.database().ref().child('postings');
+        else{
+          data = [testMessage]
+        }
         dataRef.set(data)
         this.reloadMessagesFromFirebase(postId)
         this.resetMessageField();

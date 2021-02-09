@@ -44,6 +44,7 @@ export default class Chat extends React.Component {
     if(prevProps.navigation !== this.props.navigation){
       //this.initializeFirebase();
       this.getFirebaseContacts();
+      console.log('tetas')
     }
   }
 
