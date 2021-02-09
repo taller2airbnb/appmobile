@@ -38,7 +38,7 @@ const Drawer = createDrawerNavigator(
     ChangePassword: {screen: ChangePassword}
   },
   {
-    initialRouteName: "Login",
+    initialRouteName: "Home",
     contentOptions: {
       activeTintColor: "#e91e63"
     },
@@ -48,9 +48,7 @@ const Drawer = createDrawerNavigator(
 
 const AppNavigator = createStackNavigator(
   {
-    Drawer: { screen: Drawer },
-    Login:  { screen: Login },
-    Register: {screen: Register},
+    Drawer: { screen: Drawer },   
     Posting: {screen: Posting},
     MyPostings: {screen: MyPostings},
     PostingSearch: {screen: PostingSearch},    
@@ -68,7 +66,19 @@ const AppNavigator = createStackNavigator(
   }
 );
 
+const NotLoggedNavigator = createStackNavigator(
+  {    
+    Login:  { screen: Login },
+    Register: {screen: Register},    
+  },
+  {
+    initialRouteName: "Login",
+    headerMode: "none"
+  }
+);
+
 const AppContainer = createAppContainer(AppNavigator);
+const NotLoggedAppContainer = createAppContainer(NotLoggedNavigator);
 export default class MainApp extends React.Component {
   constructor() {
     super();
@@ -117,7 +127,8 @@ export default class MainApp extends React.Component {
 
     render () {
         return (<Root>
-                    <AppContainer screenProps={{handleLogIn: this.handleLogIn, user: this.state.user}}/>
+                    {this.state.user && Object.keys(this.state.user).length === 0  && <NotLoggedAppContainer screenProps={{handleLogIn: this.handleLogIn, user: this.state.user}}></NotLoggedAppContainer>}
+                    {this.state.user && Object.keys(this.state.user).length !== 0  && <AppContainer screenProps={{user: this.state.user}}/>}
                 </Root>)
     }
 }
