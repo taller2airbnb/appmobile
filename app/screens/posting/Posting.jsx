@@ -95,7 +95,7 @@ export default class Posting extends React.Component {
 
       onCityChange(value) {
         let newState = { ...this.state};
-        newState.formData.city = value.name;
+        newState.formData.city = value ? value.name : '';
         this.setState({
             newState
         });

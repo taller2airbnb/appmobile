@@ -8,6 +8,7 @@ import { Image } from 'react-native';
 import * as Location from 'expo-location';
 import  * as Permissions from 'expo-permissions';
 import CountryDropdown from '../../components/CountryDropdown';
+import CitiesDropdown from '../../components/CitiesDropdown';
 
 const postingImage = require("../../assets/degoas.png");
 
@@ -27,9 +28,15 @@ export default class PostingSearch extends React.Component {
             priceMax: null,
             startDate: null,
             endDate: null,
-            feature:'',
-            country:'AR'
-          }
+            feature:'',            
+            max_number_guests: 2,
+            latitude: null,
+            longitude: null
+          },
+          dropdowns: {
+            country:'AR',
+            city: ''
+          }         
         } 
         this.setEndDate = this.setEndDate.bind(this);
         this.setStartDate = this.setStartDate.bind(this);
@@ -37,6 +44,8 @@ export default class PostingSearch extends React.Component {
         this.applyFilters = this.applyFilters.bind(this);    
         this.getNearbyPostings = this.getNearbyPostings.bind(this);
         this.onCountryChange = this.onCountryChange.bind(this);      
+        this.onCityChange = this.onCityChange.bind(this); 
+        this.handleNumberChange = this.handleNumberChange.bind(this);
       }
 
       async componentDidMount(){
@@ -77,7 +86,7 @@ export default class PostingSearch extends React.Component {
           if(location){            
             this.setState({fetching: true})
             this.setState({activeTab: 'results'});
-            let params = toQueryParams({MyLatitude: location.coords.latitude, MyLongitude: location.coords.longitude, numberPostings: 10});
+            let params = toQueryParams({MyLatitude: location.coords.latitude, MyLongitude: location.coords.longitude, numberPostings: 10});            
             let postingsResponse = await get(Constants.manifest.extra.postingEndpoint + '/nearbyHotels' + params, this.props.screenProps.user.accessToken)
         if(postingsResponse.status == 200){
           let json = await postingsResponse.json();
@@ -115,6 +124,7 @@ export default class PostingSearch extends React.Component {
         const features = this.state.possibleFeatures.filter(f => f.value).map(x=> x.id_feature).join(',');
         const data = {...this.state.filtersForm, feature: features}
         let params = toQueryParams(data);
+        
         let postingsResponse = await get(Constants.manifest.extra.postingEndpoint + '/search' + params, this.props.screenProps.user.accessToken)
         if(postingsResponse.status == 200){
           let json = await postingsResponse.json();
@@ -128,19 +138,19 @@ export default class PostingSearch extends React.Component {
 
       setStartDate(newDate) {
         let newFormData = {...this.state.filtersForm}        
-        newFormData.filtersForm.startDate = moment(newDate).format('YYYY-MM-DD');
+        newFormData.startDate = moment(newDate).format('YYYY-MM-DD');
         this.setState({filtersForm: newFormData});
         
       }
 
       setEndDate(newDate) {
         let newFormData = {...this.state.filtersForm}        
-        newFormData.filtersForm.endDate = moment(newDate).format('YYYY-MM-DD');
+        newFormData.endDate = moment(newDate).format('YYYY-MM-DD');
         this.setState({filtersForm: newFormData});        
       }
 
       getCovidWarning = async () => {
-        let covidResponse = await get(Constants.manifest.extra.covidWarnEndpoint + encodeURIComponent(this.state.filtersForm.country))
+        let covidResponse = await get(Constants.manifest.extra.covidWarnEndpoint + encodeURIComponent(this.state.dropdowns.country))
         if(covidResponse.status == 200){
           let json = await covidResponse.json();
           this.setState({covidWarn: json})
@@ -149,12 +159,28 @@ export default class PostingSearch extends React.Component {
 
       onCountryChange(value) {
         let newState = { ...this.state};
-        newState.filtersForm.country = value;
+        newState.dropdowns.country = value;
         newState.covidWarn = undefined;
         this.setState({
             newState
         });
         this.getCovidWarning()
+      }
+
+      onCityChange(value) {
+        let newState = { ...this.state};
+        newState.filtersForm.latitude = value ? value.latitude : 0;
+        newState.filtersForm.longitude = value ? value.longitude : 0;
+        newState.dropdowns.city = value ? value.name : ''
+        this.setState({
+            newState
+        });
+      }
+
+      handleNumberChange = (event, property) => {
+        let newState = { ...this.state};
+        newState.filtersForm[property] = Number(event.nativeEvent.text);
+        this.setState(newState);
       }
 
   render() {
@@ -176,7 +202,12 @@ export default class PostingSearch extends React.Component {
           <Content>
         <Content style={{borderWidth: 4, borderColor: "#3F51B5", margin: 5, borderRadius: 6}}>
         <H3 style={{marginTop:20, marginLeft: 10}}>Select Country:</H3>
-        <CountryDropdown placeholder="Country" selected={this.state.filtersForm.country} onValueChange={this.onCountryChange}/>
+        <Item>
+              <CountryDropdown placeholder="Country" selected={this.state.dropdowns.country} onValueChange={this.onCountryChange}/>
+        </Item>
+        <Item>
+          <CitiesDropdown placeholder="City" selected={this.state.dropdowns.city} selectedCountryCode={this.state.dropdowns.country} onValueChange={this.onCityChange}/>
+        </Item>        
         <Content padder style={{ backgroundColor: "#fff"}}>
         <Text>Check In</Text>
           <DatePicker
@@ -224,6 +255,10 @@ export default class PostingSearch extends React.Component {
             </Body>
           </ListItem>))}          
         </Content>
+        <H3 style={{marginTop:20, marginLeft: 10}}>Select Number of Guests:</H3>
+        <Item>
+          <Input label='Number Of Guests' placeholder="Number Of Guests" keyboardType='numeric' value={this.state.filtersForm.max_number_guests.toString()} onChange={ (e) => this.handleNumberChange(e, 'max_number_guests')}/>
+        </Item>        
         <H3 style={{marginTop:20, marginLeft: 10}}>Filter By Price:</H3>
         <Item>
               <Input label='Min Price per day' placeholder="Min Price (ETH)" keyboardType='numeric' onChange={ (e) => this.handlePriceChange(e, 'priceMin')}/>
