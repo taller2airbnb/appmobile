@@ -22,7 +22,7 @@ export default class CitiesDropdown extends Component {
     })
     .then(response => {
         response.json().then(data => {
-            let citiesData = data.data.map(d => ({name: d.name, latitde: d.latitude, longitude: d.longitude}))
+            let citiesData = data.data.map(d => ({name: d.name, latitude: d.latitude, longitude: d.longitude}))
             this.setState({cities: citiesData})
         })
         
