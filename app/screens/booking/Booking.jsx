@@ -74,14 +74,14 @@ export default class Booking extends React.Component {
         const dataRef = firebase.database().ref('postings').child(postingId);
         dataRef.on('value', datasnap=>{
             data = datasnap.val()
+            //if there are messages for this posting, load them to messageList.
+            let messageList = []
+            if (data != null && data != []){
+              messageList = data
+            }
+            messageList.sort((a,b) => (a.time > b.time) ? 1: -1)
+            this.setState({messages: messageList})
         })
-        //if there are messages for this posting, load them to messageList.
-        let messageList = []
-        if (data != null && data != []){
-          messageList = data
-        }
-        messageList.sort((a,b) => (a.time > b.time) ? 1: -1)
-        this.setState({messages: messageList})
       }
 
       postMessageToFirebase(){
@@ -96,13 +96,13 @@ export default class Booking extends React.Component {
         let dataRef = firebase.database().ref('postings').child(postId);
         dataRef.on('value', datasnap=>{
             data = datasnap.val()
+            if (data != null && data != {}){
+              data.push(testMessage)
+            }
+            else{
+              data = [testMessage]
+            }
         })
-        if (data != null && data != {}){
-          data.push(testMessage)
-        }
-        else{
-          data = [testMessage]
-        }
         dataRef.set(data)
         this.reloadMessagesFromFirebase(postId)
         this.resetMessageField();
@@ -110,10 +110,11 @@ export default class Booking extends React.Component {
 
       renderMessage(message){
         let userName = this.state.users[message.user]
-        let sayerAlign = 'left';
+        let sayercolor = '#3f51b5';
         let sayer = userName + ':'
         if (this.state.posting.id_user == message.user){
           sayer = userName + ' (OWNER):'
+          sayercolor = '#b54f3f';
         }
         if (message.user == this.props.screenProps.user.id.toString()){
           return (           
@@ -129,7 +130,7 @@ export default class Booking extends React.Component {
         return (
           <Row style={{minWidth: '90%', marginBottom:3}}>
             <Left>
-              <Text style={{backgroundColor: '#3f51b5', color: 'white', padding:7, borderRadius:10, marginVertical: 3, borderWidth: 1, borderColor: '#3f51b5'}}>
+              <Text style={{backgroundColor: sayercolor, color: 'white', padding:7, borderRadius:10, marginVertical: 3, borderWidth: 1, borderColor: sayercolor}}>
               {sayer} {message.text}
               </Text>
             </Left>

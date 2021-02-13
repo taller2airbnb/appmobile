@@ -51,12 +51,10 @@ export default class ChatMessage extends React.Component {
     let dataRef = firebase.database().ref('chats').child(chatId);
     dataRef.on('value', datasnap=>{
         data = datasnap.val()
+        data = this.rewriteFirebaseChatData(data, userId, newMessage);
     })
-
-    //editing and sending the data
-    data = this.rewriteFirebaseChatData(data, userId, newMessage);
+    //sending the data
     dataRef.set(data)
-
     this.loadMessagesFromFirebase(chatId);
     this.resetMessageField();
   }
@@ -116,15 +114,16 @@ export default class ChatMessage extends React.Component {
     let data = {};
     const dataRef = firebase.database().ref('pairings');
     dataRef.on('value', datasnap=>{
-        data = datasnap.val()
+        data = datasnap.val()    
+        for (var pairing in data) {
+          let userList = data[pairing];
+          if (userList.includes(id1) && userList.includes(id2)){
+            return (pairing)
+          }
+        }
     })
     //checking data for matching chat id
-    for (var pairing in data) {
-      let userList = data[pairing];
-      if (userList.includes(id1) && userList.includes(id2)){
-        return (pairing)
-      }
-    }
+
     //if there's no return yet, the chat is missing. We will create it:
     if (data != null && data != {}){
       return(this.createNewChatId(id1, id2))
@@ -132,14 +131,9 @@ export default class ChatMessage extends React.Component {
   }
 
 
-  loadMessagesFromFirebase(chatId){
-    let messageList = []
-    let data = {};
+  processMessageList(data){
+    let messageList = [];
     let message = {};
-    const dataRef = firebase.database().ref('chats').child(chatId);
-    dataRef.on('value', datasnap=>{
-        data = datasnap.val()
-    })
     for (var sayer in data){
       if (data[sayer].length>=1){
         for (var messageId in data[sayer]){
@@ -161,7 +155,16 @@ export default class ChatMessage extends React.Component {
       }
     }
     messageList.sort((a,b) => (a.time > b.time) ? 1: -1);
-    this.setState({messageList: messageList})
+    return messageList;
+  }
+
+  loadMessagesFromFirebase(chatId){
+    let data = {};
+    const dataRef = firebase.database().ref('chats').child(chatId);
+    dataRef.on('value', datasnap=>{
+        data = datasnap.val()
+        this.setState({messageList: this.processMessageList(data)})
+    })
   }
 
 

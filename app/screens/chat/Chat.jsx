@@ -73,20 +73,10 @@ export default class Chat extends React.Component {
     return(userDict)
   }
 
-  async getFirebaseContacts(){
-    
+  organizeContacts(data){
     let myContacts = [];
     let myId = Number(this.props.screenProps.user.id);
     let contact = 0;
-    console.log('__________________')
-    //getting chat pairing data from firebase
-    let data = {};
-    const dataRef = firebase.database().ref('pairings');
-    dataRef.on('value', datasnap=>{
-        data = datasnap.val()
-    })
-    console.log(data)
-    //organizing the contacts for this user
     for (var pairing in data){
       let userIds = data[pairing]
       if (userIds.includes(myId)){
@@ -99,7 +89,18 @@ export default class Chat extends React.Component {
         myContacts.push(contact.toString());
       }
     }
-    this.setState({contacts: myContacts})
+    return myContacts;
+  }
+
+  getFirebaseContacts(){
+    //getting chat pairing data from firebase
+    let data = {};
+    const dataRef = firebase.database().ref('pairings');
+    dataRef.on('value', datasnap=>{
+        data = datasnap.val()
+        //organizing the contacts for this user
+        this.setState({contacts: this.organizeContacts(data)})
+    })
   }
 
   renderContact(contactId){
