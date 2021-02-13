@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, List} from 'native-base';
+import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, List, Spinner} from 'native-base';
 import React from "react";
 import Constants from 'expo-constants';
 import {Alert} from 'react-native';
@@ -27,8 +27,10 @@ export default class Chat extends React.Component {
       email: this.props.screenProps.user.email,
       error: '',
       contacts: [],
+      fetching: true,
       people: [], 
       users: {},
+      full_names: {},
       }        
   }
 
@@ -37,19 +39,16 @@ export default class Chat extends React.Component {
         await firebase.app().delete();
     }
     firebase.initializeApp(FirebaseConfig);
-    
   }
 
   componentDidUpdate(prevProps){
     if(prevProps.navigation !== this.props.navigation){
-      this.initializeFirebase();
       this.getFirebaseContacts();
     }
   }
 
   async componentDidMount(){
     this.getUserInfo();
-    this.initializeFirebase();
     this.getFirebaseContacts();
   }
 
@@ -67,9 +66,14 @@ export default class Chat extends React.Component {
 
   userIntoList(userInfo){
     let userDict = {}
+    let full_names = {}
     for (var user in userInfo){
-      userDict[userInfo[user].id] = userInfo[user].first_name
+      let first_name = userInfo[user].first_name
+      let full_name = userInfo[user].first_name + ' ' + userInfo[user].last_name
+      full_names[userInfo[user].id] = full_name
+      userDict[userInfo[user].id] = {first_name: first_name, full_name: full_name}
     }
+    this.setState({full_names: full_names})
     return(userDict)
   }
 
@@ -100,6 +104,7 @@ export default class Chat extends React.Component {
         data = datasnap.val()
         //organizing the contacts for this user
         this.setState({contacts: this.organizeContacts(data)})
+        this.setState({fetching: false})
     })
   }
 
@@ -108,7 +113,7 @@ export default class Chat extends React.Component {
       <Button primary style={{ backgroundColor: '#dbdbdb', alignSelf: "center", marginBottom:5, width:'100%' }}
         onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[contactId], otherUserId: contactId})}>
         <View style={{flex:1}}>
-          <Text style={{marginLeft: 20, color:'#383838'}}>Chat with {this.state.users[contactId]}</Text>
+          <Text style={{marginLeft: 20, color:'#383838'}}>{this.state.full_names[contactId]}</Text>
         </View>
       </Button>
     )
@@ -117,11 +122,13 @@ export default class Chat extends React.Component {
   render() {
     return <Container>
       <Header>
-      <Body style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-        <Title>Chat</Title>
-      </Body>
+        <Body style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+          <Title>Chat</Title>
+        </Body>
       </Header>
       <Content>
+        { this.state.fetching && <Spinner color='blue' />}
+        { !this.state.fetching && (<>
         <Body>
             {(this.state.contacts.length == 0) &&
               <Body>
@@ -136,13 +143,8 @@ export default class Chat extends React.Component {
             {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
             <Text style={{color:'red'}}>{this.state.error}</Text>
             </View>}
-            <Button primary style={{ backgroundColor: '#dbdbdb', alignSelf: "center", marginBottom:5, width:'100%' }}
-              onPress={() => this.props.navigation.navigate("ChatMessage", {name: 'Jorge', otherUserId: '5'})}>
-            <View style={{flex:1}}>
-              <Text style={{marginLeft: 20, color:'#383838'}}>Chat test</Text>
-            </View>
-            </Button>
         </Body>
+      </>)}
       </Content>
     </Container>;
   }

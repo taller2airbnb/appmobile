@@ -74,28 +74,8 @@ export default class ChatMessage extends React.Component {
     let chatId = await this.getChatIdFromFirebase(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
     this.setState({name: this.props.navigation.getParam('name', 'blank')})
     this.setState({chatId: chatId})
-    this.getUserInfo();
   }
 
-  async getUserInfo(){
-    let endpoint = Constants.manifest.extra.profileEndpoint
-    let profileResponse = await get(endpoint, this.props.screenProps.user.accessToken)
-    if(profileResponse.status == 200){
-      let json = await profileResponse.json();
-      this.setState({users: this.userIntoList(json.message.users)})
-    }else{
-      let json = await profileResponse.json();
-      this.setState({error: json.message ?? 'Oops! Something went wrong.'});
-    } 
-  }
-
-  userIntoList(userInfo){
-    let userDict = {}
-    for (var user in userInfo){
-      userDict[userInfo[user].id] = userInfo[user].first_name
-    }
-    return(userDict)
-  }
 
   createNewChatId(user1, user2){
     let newChatId = user1.toString() + '_' + user2.toString()
@@ -115,11 +95,9 @@ export default class ChatMessage extends React.Component {
     const dataRef = firebase.database().ref('pairings');
     dataRef.on('value', datasnap=>{
         data = datasnap.val()    
-        console.log(data)
         for (var pairing in data) {
           let userList = data[pairing];
           if (userList.includes(id1) && userList.includes(id2)){
-            console.log('match')
             chatId = pairing
           }
         }
@@ -210,7 +188,7 @@ export default class ChatMessage extends React.Component {
           <Row style={{minWidth: '85%', marginBottom:3}}>
             <Left>
               <Text style={{backgroundColor: '#3f51b5', color: 'white', padding:7, borderRadius:10, marginVertical: 3, borderWidth: 1, borderColor: '#3f51b5'}}>
-                {this.state.name + ': '}{message.text}
+                {this.state.name.first_name + ': '}{message.text}
               </Text>
             </Left>
           </Row>
@@ -227,12 +205,11 @@ export default class ChatMessage extends React.Component {
           </Button>
         </Left>
         <Body style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-            <Title>Chat with {this.state.name}</Title>
+            <Title>{this.state.name.full_name}</Title>
         </Body>
       </Header>
       <Content>
         <Body>
-            <Text>{this.state.chatId}</Text>
             {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
             <Text style={{color:'red'}}>{this.state.error}</Text>
             </View>}

@@ -109,7 +109,7 @@ export default class Booking extends React.Component {
       }
 
       renderMessage(message){
-        let userName = this.state.users[message.user]
+        let userName = this.state.users[message.user].first_name
         let sayercolor = '#3f51b5';
         let sayer = userName + ':'
         if (this.state.posting.id_user == message.user){
@@ -224,7 +224,9 @@ export default class Booking extends React.Component {
       userIntoList(userInfo){
         let userDict = {}
         for (var user in userInfo){
-          userDict[userInfo[user].id] = userInfo[user].first_name
+          let first_name = userInfo[user].first_name
+          let full_name = userInfo[user].first_name + ' ' + userInfo[user].last_name
+          userDict[userInfo[user].id] = {first_name: first_name, full_name: full_name}
         }
         return(userDict)
       }
@@ -328,7 +330,8 @@ export default class Booking extends React.Component {
         </Header>
         <Content>
         { this.state.fetching && <Spinner color='blue' />}
-        { !this.state.fetching && (<><Image source={postingImage}  style={{width: '100%', height: 200, resizeMode: 'contain',flex: 1}} />
+        { !this.state.fetching && (<>
+        <Image source={postingImage}  style={{width: '100%', height: 200, resizeMode: 'contain',flex: 1}} />
         <Accordion
             dataArray={this.state.accordionDetailsArray}
             animation={true}
@@ -392,8 +395,8 @@ export default class Booking extends React.Component {
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Book Now</Text>
             </View>
-          </Button></>)
-        }
+          </Button>
+        </>)}
         
         </Content>
     </Container>;
