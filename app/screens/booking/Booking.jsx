@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Spinner, Accordion, Button, Body, Icon, Text, View, DatePicker, H3, Row, Col, Input, Item } from 'native-base';
+import { Container, Header, Title, Content, Spinner, Accordion, Button, Body, Icon, Text, View, DatePicker, H3, Row, Col, Input, Item, Right, Left } from 'native-base';
 import {Alert} from 'react-native';
 import React from "react";
 import Constants from 'expo-constants';
@@ -116,13 +116,24 @@ export default class Booking extends React.Component {
           sayer = userName + ' (OWNER):'
         }
         if (message.user == this.props.screenProps.user.id.toString()){
-            sayerAlign = 'right';
-            sayer = 'You:'
+          return (           
+          <Row style={{minWidth: '90%', marginBottom:3}}>
+            <Right>
+              <Text style={{backgroundColor: '#3fb53f', color: 'white', padding:7, borderRadius:10, marginVertical: 3, borderWidth: 1, borderColor: '#3fb53f'}}>
+                You: {message.text}
+              </Text>
+            </Right>
+          </Row>
+          )
         }
         return (
-          <Text style={{marginTop: 5, marginBottom:3, marginLeft: 10, marginRight: 10, minWidth: '80%', maxWidth: '80%', textAlign: sayerAlign}}>
+          <Row style={{minWidth: '90%', marginBottom:3}}>
+            <Left>
+              <Text style={{backgroundColor: '#3f51b5', color: 'white', padding:7, borderRadius:10, marginVertical: 3, borderWidth: 1, borderColor: '#3f51b5'}}>
               {sayer} {message.text}
-          </Text>
+              </Text>
+            </Left>
+          </Row>
         )
       }
 
@@ -138,7 +149,7 @@ export default class Booking extends React.Component {
               <>{messageList.map(message => this.renderMessage(message))}</>
             }
             <Row>
-              <Col style={{minWidth:'60%', alignItems: "center"}}>
+              <Col style={{minWidth:'60%', marginTop: 10, alignItems: "center"}}>
                 <Item rounded>
                   <Input 
                   style={{minWidth: '95%', maxWidth: '95%'}}
@@ -151,7 +162,8 @@ export default class Booking extends React.Component {
 
               </Col>
               <Col>
-                <Button primary disabled={!this.validTextInput()} style={{ alignSelf: "center", marginBottom:10, width:60 }}onPress={this.postMessageToFirebase.bind(this)}>
+                <Button primary disabled={!this.validTextInput()} style={{ alignSelf: "center", marginBottom:10, marginTop: 12, width:60 }}
+                  onPress={this.postMessageToFirebase.bind(this)}>
                   <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                     <Text style={{color:'white'}}>Send</Text>
                   </View>
@@ -179,8 +191,8 @@ export default class Booking extends React.Component {
           let json = await postingResponse.json();          
           this.setState({posting: json.message[0]});
           this.populateAccordionDetails();
-          this.setState({fetching: false})
           this.reloadMessagesFromFirebase(this.state.posting.id_posting);
+          this.setState({fetching: false})
         }else{
           let json = await postingResponse.json();
           this.setState({error: json.message ?? 'Oops! Something went wrong.'});

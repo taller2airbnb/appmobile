@@ -42,9 +42,8 @@ export default class Chat extends React.Component {
 
   componentDidUpdate(prevProps){
     if(prevProps.navigation !== this.props.navigation){
-      //this.initializeFirebase();
+      this.initializeFirebase();
       this.getFirebaseContacts();
-      console.log('tetas')
     }
   }
 
@@ -105,10 +104,10 @@ export default class Chat extends React.Component {
 
   renderContact(contactId){
     return (
-      <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}
+      <Button primary style={{ backgroundColor: '#dbdbdb', alignSelf: "center", marginBottom:5, width:'100%' }}
         onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[contactId], otherUserId: contactId})}>
-        <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-          <Text style={{color:'white'}}>Chat with {this.state.users[contactId]}</Text>
+        <View style={{flex:1}}>
+          <Text style={{marginLeft: 20, color:'#383838'}}>Chat with {this.state.users[contactId]}</Text>
         </View>
       </Button>
     )
@@ -136,6 +135,12 @@ export default class Chat extends React.Component {
             {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
             <Text style={{color:'red'}}>{this.state.error}</Text>
             </View>}
+            <Button primary style={{ backgroundColor: '#dbdbdb', alignSelf: "center", marginBottom:5, width:'100%' }}
+              onPress={() => this.props.navigation.navigate("ChatMessage", {name: 'Jorge', otherUserId: '5'})}>
+            <View style={{flex:1}}>
+              <Text style={{marginLeft: 20, color:'#383838'}}>Chat test</Text>
+            </View>
+            </Button>
         </Body>
       </Content>
     </Container>;

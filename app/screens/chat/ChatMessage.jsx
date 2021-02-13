@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, Form, Icon, Item, Input, Left} from 'native-base';
+import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, Form, Icon, Item, Input, Left, Right} from 'native-base';
 import React from "react";
 import Constants from 'expo-constants';
 import {Alert} from 'react-native';
@@ -188,17 +188,28 @@ export default class ChatMessage extends React.Component {
   }
 
   renderMessage(message){
-      let sayerAlign = 'left';
-      let sayer = this.state.name + ': '
       if (message.sayer == this.props.screenProps.user.id){
-          sayerAlign = 'right';
-          sayer = ''
+          return(
+            <Row style={{minWidth: '85%', marginBottom:3}}>
+              <Right>
+                <Text style={{backgroundColor: '#3fb53f', color: 'white', padding:7, borderRadius:10, marginVertical: 3, borderWidth: 1, borderColor: '#3fb53f'}}>
+                  {message.text}
+                </Text>
+              </Right>
+            </Row>
+          )
       }
-      return (
-        <Text style={{minWidth: '70%', textAlign: sayerAlign}}>
-            {sayer}{message.text}
-        </Text>
-      )
+      else{
+        return(
+          <Row style={{minWidth: '85%', marginBottom:3}}>
+            <Left>
+              <Text style={{backgroundColor: '#3f51b5', color: 'white', padding:7, borderRadius:10, marginVertical: 3, borderWidth: 1, borderColor: '#3f51b5'}}>
+                {this.state.name + ': '}{message.text}
+              </Text>
+            </Left>
+          </Row>
+        )
+      }
   }
 
   render() {
