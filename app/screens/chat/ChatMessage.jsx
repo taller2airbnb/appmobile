@@ -71,11 +71,10 @@ export default class ChatMessage extends React.Component {
   }
 
   async componentDidMount(){
-    let chatId = this.getChatIdFromFirebase(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
+    let chatId = await this.getChatIdFromFirebase(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
     this.setState({name: this.props.navigation.getParam('name', 'blank')})
     this.setState({chatId: chatId})
-    this.loadMessagesFromFirebase(chatId);
-    this.getUser
+    this.getUserInfo();
   }
 
   async getUserInfo(){
@@ -107,27 +106,32 @@ export default class ChatMessage extends React.Component {
     return newChatId
   }
 
-  getChatIdFromFirebase(user1, user2){
+  async getChatIdFromFirebase(user1, user2){
     let id1 = Number(user1);
     let id2 = Number(user2);
+    let chatId = ''
     //getting chat pairing data from firebase
     let data = {};
     const dataRef = firebase.database().ref('pairings');
     dataRef.on('value', datasnap=>{
         data = datasnap.val()    
+        console.log(data)
         for (var pairing in data) {
           let userList = data[pairing];
           if (userList.includes(id1) && userList.includes(id2)){
-            return (pairing)
+            console.log('match')
+            chatId = pairing
           }
         }
+        //if there's no return yet, the chat is missing. We will create it:
+        if (chatId == ''){
+          chatId = this.createNewChatId(id1, id2)
+        }
+        this.loadMessagesFromFirebase(chatId);
+        this.setState({chatId: chatId})
+        return(chatId);
     })
     //checking data for matching chat id
-
-    //if there's no return yet, the chat is missing. We will create it:
-    if (data != null && data != {}){
-      return(this.createNewChatId(id1, id2))
-    }
   }
 
 
@@ -168,11 +172,10 @@ export default class ChatMessage extends React.Component {
   }
 
 
-  componentDidUpdate(prevProps, prevState, snapshot){
+  async componentDidUpdate(prevProps, prevState, snapshot){
     if(prevProps.navigation !== this.props.navigation){
-        let chatId = this.getChatIdFromFirebase(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
+        let chatId = await this.getChatIdFromFirebase(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
         this.setState({name: this.props.navigation.getParam('name', 'blank')})
-        this.setState({chatId: chatId})
         this.loadMessagesFromFirebase(chatId);
         this.resetMessageField();
       }
@@ -224,11 +227,12 @@ export default class ChatMessage extends React.Component {
           </Button>
         </Left>
         <Body style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-            <Title>Message with {this.state.name}</Title>
+            <Title>Chat with {this.state.name}</Title>
         </Body>
       </Header>
       <Content>
         <Body>
+            <Text>{this.state.chatId}</Text>
             {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
             <Text style={{color:'red'}}>{this.state.error}</Text>
             </View>}
