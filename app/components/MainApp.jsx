@@ -22,6 +22,8 @@ import ChangePassword from "../screens/password/ChangePassword";
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import {put, toQueryParams} from '../api/ApiHelper';
+import Chat from "../screens/chat/Chat"
+import ChatMessage from "../screens/chat/ChatMessage"
 
 const Drawer = createDrawerNavigator(
   {
@@ -35,7 +37,9 @@ const Drawer = createDrawerNavigator(
     EditProfile: {screen: EditProfile},
     Booking: {screen: Booking},
     Password: {screen: Password},
-    ChangePassword: {screen: ChangePassword}
+    ChangePassword: {screen: ChangePassword},
+    Chat: {screen: Chat},
+    ChatMessage: {screen: ChatMessage},
   },
   {
     initialRouteName: "Home",
@@ -59,6 +63,8 @@ const AppNavigator = createStackNavigator(
     EditProfile: {screen: EditProfile},
     Password: {screen: Password},
     ChangePassword: {screen: ChangePassword},
+    Chat: {screen: Chat},
+    ChatMessage: {screen: ChatMessage},
   },
   {
     initialRouteName: "Drawer",

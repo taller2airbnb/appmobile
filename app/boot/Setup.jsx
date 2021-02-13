@@ -6,6 +6,19 @@ import { Ionicons } from '@expo/vector-icons';
 import MainApp from "../components/MainApp";
 import getTheme from "../theme/components";
 import variables from "../theme/variables/commonColor";
+import firebase from "firebase/app";
+
+const FirebaseConfig = {
+  apiKey: "",
+  appId: "",
+  projectId: "",
+  authDomain: "",
+  databaseURL: "",
+  storageBucket: "",
+  messagingSenderId: "",
+}
+
+firebase.initializeApp(FirebaseConfig);
 
 export default class Setup extends Component {
   constructor() {
