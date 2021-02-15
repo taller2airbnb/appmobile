@@ -8,6 +8,7 @@
     "featuresEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/feature",
     "profileEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/user",
     "ratingEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/rating",
+    "ratingBookerEndpoint": "http://taller2airbnb-businesscore.herokuapp.com/ratingBooker/",
     "postingEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/posting",
     "androidClientId": "266504353107-usdo5g4iii624bn9hrpo7aaa1t7qeh33.apps.googleusercontent.com",
     "androidStandAloneClientId": "266504353107-r4ft0ndal69f4cvhqudauo3s0ojgajp9.apps.googleusercontent.com",

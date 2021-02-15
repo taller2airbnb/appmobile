@@ -1,7 +1,7 @@
-import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, Spinner, Left, Accordion, Icon} from 'native-base';
+import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, Spinner, Left, Accordion, Icon, Item, Input} from 'native-base';
 import React from "react";
 import Constants from 'expo-constants';
-import {get} from '../../api/ApiHelper';
+import {get, post} from '../../api/ApiHelper';
 import {Alert} from 'react-native';
 import {NavigationEvents} from 'react-navigation';
 
@@ -14,7 +14,9 @@ export default class MyProfile extends React.Component {
             error: '', 
             fetching: true,
             ratings: [],
-            average: 'No ratings yet.'
+            average: 'No ratings yet.',
+            yourScore: 0,
+            yourComment: '',
         }        
     }
 
@@ -22,7 +24,17 @@ export default class MyProfile extends React.Component {
         this.reloadProfile();
     }
 
-
+    validForm(){
+      if(this.state.yourComment == '' || this.state.yourScore == 0){
+          return false;
+      }
+      return true;
+    }
+  
+    resetMessageField(){
+      this.setState({yourComment: ''})
+    }
+  
     averageRating(ratingsList){
       let sum = 0
       if (ratingsList.length > 0){
@@ -35,6 +47,24 @@ export default class MyProfile extends React.Component {
         return('No ratings yet.')
       }
     }
+
+    rate = async() => {
+      this.setState({error: ''})
+      if(!this.validForm()){
+          return;
+      }
+      const body = {score: this.state.yourScore, content: this.state.yourComment}
+      let endpoint = Constants.manifest.extra.ratingBookerEndpoint + this.props.navigation.getParam('id', 'blank').toString()
+      let response = await post(endpoint, body, this.props.screenProps.user.accessToken)
+      if(response.status == 200){
+          this.resetMessageField()
+          this.setState({fetching: true})    
+          this.reloadProfile()   
+      }else{
+          let json = await response.json();
+          this.setState({error: json.message ?? 'Oops! Something went wrong.'})
+      }
+  }
 
   async reloadProfile(){
     let endpoint = Constants.manifest.extra.profileEndpoint + '/' + this.props.navigation.getParam('id', 'blank').toString()
@@ -98,7 +128,55 @@ export default class MyProfile extends React.Component {
         {ratingsList.length != 0 &&
           <>{ratingsList.map(rating => this.renderRating(rating))}</>
         }
+        <Text></Text>
+        <Row style={{width: '95%'}}>
+          <Col style={{width: '33%'}}>
+            <Text style={{fontSize: 22}}>Your rating:</Text>
+          </Col>
+          <Col>
+            <Row>
+              <>{[1,2,3,4,5].map(star => this.renderStar(star))}</>
+            </Row>
+          </Col>
+        </Row>
+        <Row style={{marginTop: 5}}>
+          <Col style={{minWidth:'60%', alignItems: "center"}}>
+            <Item rounded>
+              <Input 
+              style={{minWidth: '95%', maxWidth: '95%'}}
+              autoCapitalize='none'
+              underlineColorAndroid="transparent" 
+              placeholder={'Leave a comment...'}
+              onChangeText={(yourComment) => this.setState({yourComment})}
+              value={this.state.yourComment} />
+            </Item>
+          </Col>
+          <Col>
+            <Button primary disabled={!this.validForm()} style={{ alignSelf: "center", marginBottom:10, width:60 }}onPress={this.rate.bind(this)}>
+              <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                <Text style={{color:'white'}}>Rate!</Text>
+              </View>
+            </Button>
+          </Col>
+        </Row>
       </Body>
+    )
+  }
+
+  renderStar(value){
+    let star = '☆'
+    if (value<= this.state.yourScore){
+      star = '★'
+    }
+    return(
+      <Col style={{width: 50}}>
+        <Button style={{ alignSelf: "center", padding:1, width:40, height: 40, backgroundColor: 'white' }}
+        onPress={() => this.setState({yourScore: value})}>
+          <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+            <Text style={{fontSize: 40, color:'#f0b000'}}>{star}</Text>
+          </View>
+        </Button>
+      </Col>
     )
   }
 
