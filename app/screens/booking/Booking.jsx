@@ -5,6 +5,7 @@ import Constants from 'expo-constants';
 import {post, get} from '../../api/ApiHelper';
 import moment from 'moment';
 import { Image } from 'react-native';
+import { SliderBox } from "react-native-image-slider-box";
 const postingImage = require("../../assets/degoas.png");
 
 export default class Booking extends React.Component {
@@ -23,7 +24,9 @@ export default class Booking extends React.Component {
           endDate: new Date(),
           currentDate: new Date(),
           error: '',
-          fetching: true
+          fetching: true,
+          images: [
+          ]
         }        
         this.setEndDate = this.setEndDate.bind(this);
         this.setStartDate = this.setStartDate.bind(this);
@@ -57,7 +60,7 @@ export default class Booking extends React.Component {
       }
 
       async componentDidMount(){        
-        this.getPosting();
+        this.getPosting();        
       }
 
       async getPosting(){
@@ -65,10 +68,22 @@ export default class Booking extends React.Component {
         if(postingResponse.status == 200){
           let json = await postingResponse.json();          
           this.setState({posting: json.message[0]});
-          this.populateAccordionDetails();
-          this.setState({fetching: false})
+          this.populateAccordionDetails();          
         }else{
           let json = await postingResponse.json();
+          this.setState({error: json.message ?? 'Oops! Something went wrong.'});
+        }
+        let imagesResponse = await get(Constants.manifest.extra.imagesEndpoint + this.props.navigation.getParam('postingId'), this.props.screenProps.user.accessToken)
+        if(imagesResponse.status == 200){
+          let json = await imagesResponse.json();
+          if(Array.isArray(json.message) && json.message.length > 0){
+            this.setState({images: json.message.map(x => x.url)});   
+          }else{
+            this.setState({images: [postingImage]}); 
+          }
+          this.setState({fetching: false})
+        }else{
+          let json = await imagesResponse.json();
           this.setState({error: json.message ?? 'Oops! Something went wrong.'});
         }
       }
@@ -179,7 +194,10 @@ export default class Booking extends React.Component {
         </Header>
         <Content>
         { this.state.fetching && <Spinner color='blue' />}
-        { !this.state.fetching && (<><Image source={postingImage}  style={{width: '100%', height: 200, resizeMode: 'contain',flex: 1}} />
+        { !this.state.fetching && (
+        <>
+        {/* <Image source={postingImage}  style={{width: '100%', height: 200, resizeMode: 'contain',flex: 1}} /> */}
+        <SliderBox images={this.state.images} sliderBoxHeight={300}/>
         <Accordion
             dataArray={this.state.accordionDetailsArray}
             animation={true}
