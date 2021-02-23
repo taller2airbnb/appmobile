@@ -82,6 +82,7 @@ const NotLoggedNavigator = createStackNavigator(
   {    
     Login:  { screen: Login },
     Register: {screen: Register},    
+    Password: {screen: Password},   
   },
   {
     initialRouteName: "Login",
