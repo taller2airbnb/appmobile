@@ -30,6 +30,9 @@ export default class Booking extends React.Component {
           currentDate: new Date(),
           error: '',
           fetching: true,
+          reviews: [],
+          yourComment: '',
+          yourScore: 0,
           images: [
           ],
           users: {},
@@ -67,8 +70,16 @@ export default class Booking extends React.Component {
         return true;
       }
 
+      validForm(){
+        if(this.state.yourComment == '' || this.state.yourScore == 0){
+            return false;
+        }
+        return true;
+      }
+    
       resetMessageField(){
         this.setState({textInput: ''})
+        this.setState({yourComment: ''})
       }
 
       async reloadMessagesFromFirebase(postingId){
@@ -140,6 +151,96 @@ export default class Booking extends React.Component {
           </Row>
         )
       }
+
+      renderStar(value){
+        let star = '☆'
+        if (value<= this.state.yourScore){
+          star = '★'
+        }
+        return(
+          <Col style={{width: 50}}>
+            <Button style={{ alignSelf: "center", padding:1, width:40, height: 40, backgroundColor: 'white' }}
+            onPress={() => this.setState({yourScore: value})}>
+              <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                <Text style={{fontSize: 40, color:'#f0b000'}}>{star}</Text>
+              </View>
+            </Button>
+          </Col>
+        )
+      }
+
+      renderRating(rating){
+        let score = ''
+        for (var i = 0; i < 5; i++) {
+          if (rating.score > i){
+            score += '★'
+          }
+          else{
+            score += '☆'
+          }
+       }
+        return(
+          <Row style={{width: '100%', paddingHorizontal: 10}}>
+            <Col>
+              <Text style={{fontSize: 25, color: '#f0b000', padding: 4}}>
+                {score}
+              </Text>
+            </Col>
+            <Col style={{width: '67%'}}>
+              <Text style={{textAlign: "left", backgroundColor: "#5e5e5e", color: 'white', padding:7, borderRadius:10, marginVertical: 3, borderWidth: 1, borderColor: '#5e5e5e'}}>
+                {rating.content}
+              </Text>
+            </Col>
+          </Row>
+        )
+      }
+
+
+      renderReviews(item){
+        let ratingsList = item.content.reviews
+        return (
+          <Body>        
+            {ratingsList.length == 0 &&
+            <Text style={{marginTop: 10, marginBottom: 10, textAlign: 'center'}}>Be the first to review this posting!</Text>
+            }
+            {ratingsList.length != 0 &&
+              <>{ratingsList.map(rating => this.renderRating(rating))}</>
+            }
+            <Text></Text>
+            <Row style={{width: '95%'}}>
+              <Col style={{width: '33%'}}>
+                <Text style={{fontSize: 22}}>Your rating:</Text>
+              </Col>
+              <Col>
+                <Row>
+                  <>{[1,2,3,4,5].map(star => this.renderStar(star))}</>
+                </Row>
+              </Col>
+            </Row>
+            <Row style={{marginTop: 5}}>
+              <Col style={{minWidth:'60%', alignItems: "center"}}>
+                <Item rounded>
+                  <Input 
+                  style={{minWidth: '95%', maxWidth: '95%'}}
+                  autoCapitalize='none'
+                  underlineColorAndroid="transparent" 
+                  placeholder={'Leave a comment...'}
+                  onChangeText={(yourComment) => this.setState({yourComment})}
+                  value={this.state.yourComment} />
+                </Item>
+              </Col>
+              <Col>
+                <Button primary disabled={!this.validForm()} style={{ alignSelf: "center", marginBottom:10, width:60 }}onPress={this.rate.bind(this)}>
+                  <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                    <Text style={{color:'white'}}>Rate!</Text>
+                  </View>
+                </Button>
+              </Col>
+            </Row>
+          </Body>
+        )
+      }
+
 
       renderComments(item) {
         let messageList = item.content.messages
@@ -219,9 +320,42 @@ export default class Booking extends React.Component {
         if(prevProps.navigation.getParam('postingId') !== this.props.navigation.getParam('postingId')){          
           this.setState(this.initialState());
           this.getPosting();
+          this.getUserInfo();
           this.resetMessageField();
         }    
       }
+
+      averageRating(ratingsList){
+        let sum = 0
+        if (ratingsList.length > 0){
+          for(var rating in ratingsList){
+            sum += ratingsList[rating].score;
+          }
+          return (sum/ratingsList.length).toFixed(2).toString()+' / 5';
+        }
+        else {
+          return('No ratings yet.')
+        }
+      }
+
+      rate = async() => {
+        this.setState({error: ''})
+        if(!this.validForm()){
+            return;
+        }
+        const body = {score: this.state.yourScore, content: this.state.yourComment}
+        let endpoint = Constants.manifest.extra.ratingPostingEndpoint + this.props.navigation.getParam('postingId').toString()
+        let response = await post(endpoint, body, this.props.screenProps.user.accessToken)
+        if(response.status == 200){
+            this.resetMessageField()
+            this.setState({fetching: true})    
+            this.getUserInfo()   
+            this.setState({fetching: false})    
+        }else{
+            let json = await response.json();
+            this.setState({error: json.message ?? 'Oops! Something went wrong.'})
+        }
+    }
 
       async getUserInfo(){
         //necesaria para ver los nombres de la gente que comenta
@@ -233,7 +367,19 @@ export default class Booking extends React.Component {
         }else{
           let json = await profileResponse.json();
           this.setState({error: json.message ?? 'Oops! Something went wrong.'});
-        } 
+        }
+        endpoint = Constants.manifest.extra.ratingEndpoint + '/posting?idPosting=' + this.props.navigation.getParam('postingId').toString()
+        
+        console.log(endpoint)
+        profileResponse = await get(endpoint, this.props.screenProps.user.accessToken)
+        if(profileResponse.status == 200){
+          let json = await profileResponse.json();
+          this.setState({average: this.averageRating(json.message)})
+          this.setState({reviews: json.message})
+        }else{
+          let json = await profileResponse.json();
+          this.setState({error: json.message ?? 'Oops! Something went wrong.'});
+        }
       }
     
       userIntoList(userInfo){
@@ -355,6 +501,13 @@ export default class Booking extends React.Component {
             expanded={true}
             renderHeader={this._renderHeader}
             renderContent={this._renderContent}
+          />
+        <Accordion
+            dataArray={[{ title: 'Reviews', content: {reviews: this.state.reviews}}]}
+            animation={true}
+            expanded={true}
+            renderHeader={this._renderHeader}
+            renderContent={this.renderReviews.bind(this)}
           />
         <Accordion
             dataArray={[{ title: 'Comments', content: {messages: this.state.messages}}]}
