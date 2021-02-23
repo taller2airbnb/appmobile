@@ -1,5 +1,5 @@
 import { Container, Header, Title, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text, Form, Item, Input, Picker, View, DatePicker, CheckBox, ListItem, H3 } from 'native-base';
-import {Alert} from 'react-native';
+import {Alert, Platform} from 'react-native';
 import React from "react";
 import * as Google from 'expo-google-app-auth';
 import Constants from 'expo-constants';
@@ -117,17 +117,18 @@ export default class Posting extends React.Component {
             "Posting Created Successfully",
             "",
             [              
-              { text: "OK", onPress: () => this.navigateToMyPostings() }
+              { text: "OK"}
             ],
             { cancelable: false }
           );
-          this.props.navigation.navigate('MyPostings')
+          let json = await response.json();
+          this.props.navigation.navigate('PostingImageUpload', {postingId: json.message.id_posting})
         }else{
           let json = await response.json();
           Alert.alert(json.message ?? 'Oops! Something went wrong.')
           //this.setState({error: json.message ?? 'Oops! Something went wrong.'});
         } 
-      }
+      }      
 
   render() {
     return <Container>

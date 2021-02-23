@@ -14,6 +14,7 @@ import Register from "../screens/register/Register"
 import SideBar from "../screens/sidebar/Sidebar";
 import PostingSearch from "../screens/posting/PostingSearch";
 import Profile from "../screens/profile/Profile";
+import PostingImageUpload from "../screens/posting/PostingImageUpload";
 import MyProfile from "../screens/profile/MyProfile";
 import EditProfile from "../screens/profile/EditProfile";
 import Booking from "../screens/booking/Booking";
@@ -31,7 +32,7 @@ const Drawer = createDrawerNavigator(
     Home: { screen: Home },
     Posting: {screen: Posting},
     MyPostings: {screen: MyPostings},
-    MyBookings: {screen: MyBookings},
+    MyBookings: {screen: MyBookings},    
     Login:  {screen: Login},
     PostingSearch: {screen: PostingSearch},
     Profile: {screen: Profile},
@@ -40,6 +41,7 @@ const Drawer = createDrawerNavigator(
     Booking: {screen: Booking},
     Password: {screen: Password},
     ChangePassword: {screen: ChangePassword},
+    PostingImageUpload: {screen: PostingImageUpload},
     Chat: {screen: Chat},
     ChatMessage: {screen: ChatMessage},
   },
@@ -60,6 +62,7 @@ const AppNavigator = createStackNavigator(
     PostingSearch: {screen: PostingSearch},    
     EditPosting: {screen: EditPosting},
     MyBookings: {screen: MyBookings},
+    PostingImageUpload: {screen: PostingImageUpload},
     Booking: {screen: Booking},
     Profile: {screen: Profile},
     MyProfile: {screen: MyProfile},
