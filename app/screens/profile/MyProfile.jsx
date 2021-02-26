@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col } from 'native-base';
+import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, Spinner } from 'native-base';
 import React from "react";
 import Constants from 'expo-constants';
 import {get} from '../../api/ApiHelper';
@@ -12,6 +12,8 @@ export default class MyProfile extends React.Component {
       email: this.props.screenProps.user.email,
       profile: {},
       error: '', 
+      wallet: '',
+      loading: true,
       }        
   }
 
@@ -26,6 +28,14 @@ export default class MyProfile extends React.Component {
     if(profileResponse.status == 200){
       let json = await profileResponse.json();
       this.setState({profile: json.message})
+      endpoint = Constants.manifest.extra.walletEndpoint
+      profileResponse = await get(endpoint, this.props.screenProps.user.accessToken)
+      if(profileResponse.status == 200){
+        let json = await profileResponse.json();
+        this.setState({wallet: json.message.wallet})
+        this.setState({loading: false})
+
+      }
     }else{
       let json = await profileResponse.json();
       this.setState({error: json.message ?? 'Oops! Something went wrong.'});
@@ -52,7 +62,11 @@ export default class MyProfile extends React.Component {
         <Title>My Profile</Title>
       </Body>
       </Header>
-      <Content>
+
+      {(this.state.loading) && <Content>
+        <Spinner color='blue' />
+      </Content>}
+      {(! this.state.loading) && <Content>
         <Body>
           {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
             <Text style={{color:'red'}}>{this.state.error}</Text>
@@ -75,6 +89,10 @@ export default class MyProfile extends React.Component {
             <Col><H3 style={{marginTop:10, marginLeft: 30, marginBottom:10}}>Document Id</H3></Col>
             <Col><Text style={{marginTop:7}}>{this.state.profile.national_id_type} {this.state.profile.national_id}</Text></Col>
           </Row>
+          <Row>
+            <Col><H3 style={{marginTop:10, marginLeft: 30, marginBottom:10}}>Wallet Id</H3></Col>
+            <Col><Text style={{marginTop:7}}>{this.state.wallet}</Text></Col>
+          </Row>
           <Text></Text>
           <Text></Text>
           <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={() => this.props.navigation.navigate("EditProfile")}>
@@ -83,7 +101,7 @@ export default class MyProfile extends React.Component {
             </View>
           </Button>
         </Body>
-      </Content>
+      </Content>}
     </Container>;
   }
 }

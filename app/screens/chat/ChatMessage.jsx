@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, Form, Icon, Item, Input, Left, Right} from 'native-base';
+import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, Form, Icon, Item, Input, Left, Right, Spinner} from 'native-base';
 import React from "react";
 import Constants from 'expo-constants';
 import {Alert} from 'react-native';
@@ -20,6 +20,7 @@ export default class ChatMessage extends React.Component {
       chatId: '',
       messageList: [],
       textInput: '',
+      loading: true,
       }        
   }
 
@@ -146,12 +147,14 @@ export default class ChatMessage extends React.Component {
     dataRef.on('value', datasnap=>{
         data = datasnap.val()
         this.setState({messageList: this.processMessageList(data)})
+        this.setState({loading: false})
     })
   }
 
 
   async componentDidUpdate(prevProps, prevState, snapshot){
     if(prevProps.navigation !== this.props.navigation){
+        this.setState({loading: true})
         let chatId = await this.getChatIdFromFirebase(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
         this.setState({name: this.props.navigation.getParam('name', 'blank')})
         this.loadMessagesFromFirebase(chatId);
@@ -208,7 +211,11 @@ export default class ChatMessage extends React.Component {
             <Title>{this.state.name.full_name}</Title>
         </Body>
       </Header>
-      <Content>
+
+      {(this.state.loading) && <Content>
+        <Spinner color='blue' />
+      </Content>}
+      {(! this.state.loading) && <Content>
         <Body>
             {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
             <Text style={{color:'red'}}>{this.state.error}</Text>
@@ -238,7 +245,7 @@ export default class ChatMessage extends React.Component {
               </Col>
             </Row>
         </Body>
-      </Content>
+      </Content>}
     </Container>;
   }
 }
