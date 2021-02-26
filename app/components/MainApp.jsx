@@ -122,8 +122,10 @@ export default class MainApp extends React.Component {
       }
       const token = (await Notifications.getExpoPushTokenAsync()).data;
       const data = {push_token: token};
+      
       let params = toQueryParams({idUser: this.state.user.id});
-      let pushTokenResponse = await put(Constants.manifest.extra.pushTokenEndpoint + params, data, this.props.screenProps.user.accessToken)        
+      let pushTokenResponse = await put(Constants.manifest.extra.pushTokenEndpoint + params, data, this.state.user.accessToken)     
+      
       this.setState({ expoPushToken: token });
     } else {
       alert('Must use physical device for Push Notifications');
