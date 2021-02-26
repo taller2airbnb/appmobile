@@ -18,8 +18,21 @@ export default class MyPostings extends React.Component {
       async getPostings(){
         let postingsResponse = await get(Constants.manifest.extra.myPostingsEndpoint, this.props.screenProps.user.accessToken)
         if(postingsResponse.status == 200){
-          let json = await postingsResponse.json();
-          this.setState({postings: json.message})
+          let json = await postingsResponse.json();          
+          const postingsWithImagesResponse = await Promise.all(json.message.map(async (i) => {
+            let imagesResponse = await get(Constants.manifest.extra.imagesEndpoint + i.id_posting, this.props.screenProps.user.accessToken)
+            if(imagesResponse.status == 200){
+            let jsonImg = await imagesResponse.json();
+            if(Array.isArray(jsonImg.message) && jsonImg.message.length > 0){              
+            return {...i, image: {uri: jsonImg.message.map(x => x.url)[0]}}
+          }else{
+            return {...i, image: postingImage} 
+          }          
+        }else{       
+          return {...i, image: postingImage}   
+        }
+          }));
+          this.setState({postings: postingsWithImagesResponse})          
           this.setState({fetching: false})
         }else{
           let json = await postingsResponse.json();
@@ -68,7 +81,7 @@ export default class MyPostings extends React.Component {
             </CardItem>
             <CardItem>
               <Body>
-                <Image source={postingImage}  style={{width: '100%', height: 200, resizeMode: 'contain',flex: 1}} />
+                <Image source={posting.image ?? postingImage}  style={{width: '100%', height: 200, resizeMode: 'contain',flex: 1}} />
                 <Text>
                   {posting.content}
                 </Text>
