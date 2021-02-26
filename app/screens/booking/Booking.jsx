@@ -2,7 +2,7 @@ import { Container, Header, Title, Content, Spinner, Accordion, Button, Body, Ic
 import {Alert} from 'react-native';
 import React from "react";
 import Constants from 'expo-constants';
-import {post, get} from '../../api/ApiHelper';
+import {post, get, toQueryParams} from '../../api/ApiHelper';
 import moment from 'moment';
 import { Image } from 'react-native';
 import { SliderBox } from "react-native-image-slider-box";
@@ -35,11 +35,15 @@ export default class Booking extends React.Component {
           users: {},
           messages: [],
           textInput: '',
+          recommendations:[],
+          currentRecommendationIndex: 0
         }        
         this.setEndDate = this.setEndDate.bind(this);
         this.setStartDate = this.setStartDate.bind(this);
         this.createBooking = this.createBooking.bind(this);
         this.navigateToMyBookings = this.navigateToMyBookings.bind(this);
+        this.goToRecommendation = this.goToRecommendation.bind(this);
+        this.setCurrentRecommendationIndex = this.setCurrentRecommendationIndex.bind(this);
       }
 
       initialState(){
@@ -179,21 +183,35 @@ export default class Booking extends React.Component {
       }
 
       populateAccordionDetails(){
-        let description = { title: 'Description', content: this.state.posting.content}
-        let features = { title: 'Features', content: 'Feature 1, 2 , 3 , 4'}
+        let postingFeatures = this.state.posting.features.split(',');        
+        let description = { title: 'Description', content: this.state.posting.content}        
+        let features = { title: 'Features', content: this.state.possibleFeatures.filter(x => postingFeatures.includes(x.id_feature.toString())).map(x=> x.name).join(',')}
         this.setState({accordionDetailsArray: [description, features]})
       }
 
-      async componentDidMount(){        
-        this.getPosting();
+      async componentDidMount(){       
+        let featuresResponse = await get(Constants.manifest.extra.featuresEndpoint, this.props.screenProps.user.accessToken)
+        if(featuresResponse.status == 200){
+          let json = await featuresResponse.json();          
+          this.setState({possibleFeatures: json.message})
+          console.log(json.message)
+        }else{
+          let json = await featuresResponse.json();
+          Alert.alert({error: json.message ?? 'Oops! Something went wrong.'})
+        } 
+        this.getPosting();        
         this.getUserInfo();
+      }
+
+      setCurrentRecommendationIndex(index){
+        this.setState({currentRecommendationIndex: index})
       }
 
       async getPosting(){
         let postingResponse = await get(Constants.manifest.extra.postingEndpoint + '?idPosting=' + this.props.navigation.getParam('postingId'), this.props.screenProps.user.accessToken)
         if(postingResponse.status == 200){
           let json = await postingResponse.json();          
-          this.setState({posting: json.message[0]});                    
+          this.setState({posting: json.message[0]});          
           this.populateAccordionDetails();
           this.reloadMessagesFromFirebase(this.state.posting.id_posting);          
         }else{
@@ -213,6 +231,27 @@ export default class Booking extends React.Component {
           let json = await imagesResponse.json();
           this.setState({error: json.message ?? 'Oops! Something went wrong.'});
         }
+
+        //recommendations
+        let params = toQueryParams({latitude: this.props.navigation.getParam('latitude'), longitude: this.props.navigation.getParam('longitude'), limit: 5}); 
+        let recommendationsResponse = await get(Constants.manifest.extra.postingEndpoint + '/recomendations' + params, this.props.screenProps.user.accessToken)
+        if(recommendationsResponse.status == 200){
+          let json = await recommendationsResponse.json();
+          const postingsWithImagesResponse = await Promise.all(json.message.map(async (i) => {
+            let imagesResponse = await get(Constants.manifest.extra.imagesEndpoint + i.id_posting, this.props.screenProps.user.accessToken)
+            if(imagesResponse.status == 200){
+            let jsonImg = await imagesResponse.json();
+            if(Array.isArray(jsonImg.message) && jsonImg.message.length > 0){              
+            return {...i, image: {uri: jsonImg.message.map(x => x.url)[0]}}
+          }else{
+            return {...i, image: postingImage} 
+          }          
+        }else{       
+          return {...i, image: postingImage}   
+        }
+          }));
+          this.setState({recommendations: postingsWithImagesResponse})         
+        }
       }
 
       componentDidUpdate(prevProps, prevState, snapshot){        
@@ -221,6 +260,10 @@ export default class Booking extends React.Component {
           this.getPosting();
           this.resetMessageField();
         }    
+      }
+
+      goToRecommendation(index){        
+        this.props.navigation.navigate('Booking', {postingId: this.state.recommendations[index].id_posting, latitude: this.props.navigation.getParam('latitude'), longitude: this.props.navigation.getParam('longitude')});
       }
 
       async getUserInfo(){
@@ -414,6 +457,13 @@ export default class Booking extends React.Component {
             </View>
           </Button>
         </>)}
+        {this.state.recommendations.length > 0 && (
+          <>
+          <H3 style={{marginTop:20, marginLeft: 10}}>Other Postings you might like:</H3>
+          <Text style={{marginLeft: 10}}>{this.state.recommendations[this.state.currentRecommendationIndex].name}</Text>
+          <SliderBox images={this.state.recommendations.map(x => x.image)} currentImageEmitter={this.setCurrentRecommendationIndex} sliderBoxHeight={300} onCurrentImagePressed={this.goToRecommendation}/>
+          </>
+        )}
         
         </Content>
     </Container>;

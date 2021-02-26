@@ -33,12 +33,45 @@ export default class MyBookings extends React.Component {
         let confirmedBookingsResponse = await get(Constants.manifest.extra.myBookingsEndpoint, this.props.screenProps.user.accessToken)
         if(confirmedBookingsResponse.status == 200){
           let json = await confirmedBookingsResponse.json();
-          this.setState({confirmedBookings: json.message});
-          this.setState({fetching: false})
+          this.setState({confirmedBookings: json.message});          
         }else{
           let json = await confirmedBookingsResponse.json();
           this.setState({error: json.message ?? 'Sorry. Could not retrieve confirmed bookings.'});
-        }        
+        }
+
+        if(confirmedBookingsResponse.status == 200 && pendingBookingsResponse.status == 200){
+          const asyncconfirmedBookingsResponse = await Promise.all(this.state.confirmedBookings.map(async (i) => {
+            let imagesResponse = await get(Constants.manifest.extra.imagesEndpoint + i.id_posting, this.props.screenProps.user.accessToken)
+            if(imagesResponse.status == 200){
+            let json = await imagesResponse.json();
+            if(Array.isArray(json.message) && json.message.length > 0){              
+            return {...i, image: json.message.map(x => x.url)[0]}
+          }else{
+            return {...i, image: postingImage} 
+          }          
+        }else{       
+          return {...i, image: postingImage}   
+        }
+          }));
+          this.setState({confirmedBookings: asyncconfirmedBookingsResponse});
+
+          const asyncpendingBookingsResponse = await Promise.all(this.state.pendingBookings.map(async (i) => {
+            let imagesResponse = await get(Constants.manifest.extra.imagesEndpoint + i.id_posting, this.props.screenProps.user.accessToken)
+            if(imagesResponse.status == 200){
+            let json = await imagesResponse.json();
+            if(Array.isArray(json.message) && json.message.length > 0){              
+            return {...i, image: {uri:json.message.map(x => x.url)[0]}}
+          }else{
+            return {...i, image: postingImage} 
+          }          
+        }else{       
+          return {...i, image: postingImage}   
+        }
+          }));
+          this.setState({pendingBookings: asyncpendingBookingsResponse});
+          this.setState({fetching: false})
+        }
+        
       }      
 
       goToBooking(id){
@@ -76,7 +109,7 @@ export default class MyBookings extends React.Component {
             </CardItem>
             <CardItem>
               <Body>
-                <Image source={postingImage}  style={{width: '100%', height: 200, resizeMode: 'contain',flex: 1}} />                
+                <Image source={booking.image ?? postingImage}  style={{width: '100%', height: 200, resizeMode: 'contain',flex: 1}} />                
               </Body>
             </CardItem>
             <CardItem>
@@ -118,7 +151,7 @@ export default class MyBookings extends React.Component {
             </CardItem>
             <CardItem>
               <Body>
-                <Image source={postingImage}  style={{width: '100%', height: 200, resizeMode: 'contain',flex: 1}} />                
+                <Image source={booking.image ?? postingImage}  style={{width: '100%', height: 200, resizeMode: 'contain',flex: 1}} />                
               </Body>
             </CardItem>
             <CardItem>
