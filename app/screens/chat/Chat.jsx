@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, List, Spinner} from 'native-base';
+import { Container, Header, Title, Content, Body, Text, Button, View, H3, Table, Row, Col, List, Spinner, Right} from 'native-base';
 import React from "react";
 import Constants from 'expo-constants';
 import {Alert} from 'react-native';
@@ -93,12 +93,31 @@ export default class Chat extends React.Component {
 
   renderContact(contactId){
     return (
-      <Button primary style={{ backgroundColor: '#dbdbdb', alignSelf: "center", marginBottom:5, width:'100%' }}
-        onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[contactId], otherUserId: contactId})}>
-        <View style={{flex:1}}>
-          <Text style={{marginLeft: 20, color:'#383838'}}>{this.state.full_names[contactId]}</Text>
+      <View>
+        <View style={{ backgroundColor: '#dbdbdb', marginVertical:3, width:'100%' }}>
+          <Row style={{ backgroundColor: '#dbdbdb', marginVertical:4, width:'100%' }}>
+            <Col style={{verticalAlign: 'middle', height: '100%'}}>
+              <Text style={{marginTop: 8, marginLeft: 20, color:'#383838'}}>{this.state.full_names[contactId]}</Text>
+            </Col>
+            <Col style={{width: 70}}>
+              <Button primary style={{ alignSelf: "center", width:70, height: 40, borderRadius:10, padding:1, backgroundColor: "#5e5e5e"}}
+                onPress={() => this.props.navigation.navigate("Profile", {id: contactId, name: this.state.full_names[contactId]})}>
+                <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                  <Text style={{color:'white'}}>Profile</Text>
+                </View>
+              </Button>
+            </Col>
+            <Col style={{width: 90}}>
+              <Button primary style={{ alignSelf: "center", width:70, height: 40, borderRadius:10, padding:1, backgroundColor: "#5e5e5e"}}
+                onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[contactId], otherUserId: contactId})}>
+                <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                  <Text style={{color:'white'}}>Chat</Text>
+                </View>
+              </Button>
+            </Col>
+          </Row>
         </View>
-      </Button>
+      </View>
     )
 }
 
@@ -106,7 +125,7 @@ export default class Chat extends React.Component {
     return <Container>
       <Header>
         <Body style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-          <Title>Chat</Title>
+          <Title>Contacts</Title>
         </Body>
       </Header>
       <Content>
