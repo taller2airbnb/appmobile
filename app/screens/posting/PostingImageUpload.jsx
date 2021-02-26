@@ -83,8 +83,9 @@ let response = await fetch(Constants.manifest.extra.imagesEndpoint + 'upload/' +
       
 
       navigateToMyPostings = () => {
-        this.props.navigation.navigate('MyPostings')
+        this.props.navigation.navigate('MyPostings', {refresh: true})
       }
+      
       render() {
         return <Container>
             <Header>
