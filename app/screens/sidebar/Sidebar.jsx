@@ -47,6 +47,12 @@ const datas = [
     profiles:[0,2]
   },
   {
+    name: "My Offers",
+    route: "MyOffers",
+    bg: "#C5F442",
+    profiles:[0,1]
+  },
+  {
     name: "Contacts",
     route: "Chat",
     bg: "#C5F442",

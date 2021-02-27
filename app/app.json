@@ -21,7 +21,10 @@
     "recoverPasswordEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/recover_token/",
     "pushTokenEndpoint": "https://taller2airbnb-businesscore.herokuapp.com/pushToken",
     "covidWarnEndpoint": "http://taller2airbnb-covidwarn.herokuapp.com/rule-checker/",
-    "imagesEndpoint": "http://taller2airbnb-businesscore.herokuapp.com/images/"
+    "imagesEndpoint": "http://taller2airbnb-businesscore.herokuapp.com/images/",
+    "myOffersEndpoint": "http://taller2airbnb-businesscore.herokuapp.com/myOffers",
+    "acceptBookingEndpoint": "http://taller2airbnb-businesscore.herokuapp.com/acceptBooking",
+    "rejectBookingEndpoint": "http://taller2airbnb-businesscore.herokuapp.com/rejectBooking"
   },
   "android": {
     "package": "bookbnb.degoasedition",
