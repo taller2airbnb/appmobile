@@ -559,12 +559,24 @@ export default class Booking extends React.Component {
             renderHeader={this._renderHeader}
             renderContent={this.renderComments.bind(this)}
           />
-          <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:200 }}
-              onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[this.state.posting.id_user], otherUserId: this.state.posting.id_user})}>
-            <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-              <Text style={{color:'white'}}>Chat with owner</Text>
-            </View>
-          </Button>
+          <Row>
+            <Col>
+            <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:160 }}
+                onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[this.state.posting.id_user], otherUserId: this.state.posting.id_user})}>
+              <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                <Text style={{color:'white'}}>Chat with owner</Text>
+              </View>
+            </Button>
+            </Col>
+            <Col>
+            <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:160 }}
+                onPress={() => this.props.navigation.navigate("Profile", {id: this.state.posting.id_user, name: this.state.users[this.state.posting.id_user].first_name})}>
+              <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                <Text style={{color:'white'}}>Owner's profile</Text>
+              </View>
+            </Button>
+            </Col>
+          </Row>
         <Content style={{borderWidth: 4, borderColor: "#3F51B5", margin: 5, borderRadius: 6}}>
         <Content padder style={{ backgroundColor: "#fff"}}>
         <Text>Check In</Text>
