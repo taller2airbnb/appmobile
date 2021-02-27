@@ -43,9 +43,9 @@ export default class ChatMessage extends React.Component {
   }
 
 
-  sendMessageToFirebase(chatId, userId){
-    chatId = this.state.chatId
-    userId = this.props.screenProps.user.id.toString()
+  sendMessageToFirebase(){
+    let chatId = this.state.chatId
+    let userId = this.props.screenProps.user.id.toString()
     let newMessage = {created: new Date().toJSON(), text: this.state.textInput}
     //getting messages data from firebase
     let data = {};
@@ -147,6 +147,7 @@ export default class ChatMessage extends React.Component {
     dataRef.on('value', datasnap=>{
         data = datasnap.val()
         this.setState({messageList: this.processMessageList(data)})
+        this.setState({chatId: chatId})
         this.setState({loading: false})
     })
   }
@@ -155,16 +156,19 @@ export default class ChatMessage extends React.Component {
   async componentDidUpdate(prevProps, prevState, snapshot){
     if(prevProps.navigation !== this.props.navigation){
         this.setState({loading: true})
+        this.resetMessageField();
         let chatId = await this.getChatIdFromFirebase(this.props.screenProps.user.id.toString(), this.props.navigation.getParam('otherUserId', 'blank'))
         this.setState({name: this.props.navigation.getParam('name', 'blank')})
         this.loadMessagesFromFirebase(chatId);
-        this.resetMessageField();
       }
       
     }   
 
   validForm(){
     if(this.state.textInput == ''){
+        return false;
+    }
+    if(this.state.chatId == ''){
         return false;
     }
     return true;
