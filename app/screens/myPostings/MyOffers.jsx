@@ -3,11 +3,12 @@ import React from "react";
 import {get, post} from '../../api/ApiHelper';
 import Constants from 'expo-constants';
 import { Image, Alert } from 'react-native';
+import { withNavigationFocus } from "react-navigation";
 import moment from 'moment';
 
 const postingImage = require("../../assets/degoas.png");
 
-export default class MyOffers extends React.Component {
+class MyOffers extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -54,7 +55,11 @@ export default class MyOffers extends React.Component {
             this.getOffers();
             this.props.navigation.setParams({refresh: false})
           }          
-        }   
+        }  
+        if (prevProps.isFocused !== this.props.isFocused && this.props.isFocused) {          
+          this.setState({fetching: true})
+          this.getOffers();
+        } 
       }
 
       async acceptOffer(transactionHash, index){
@@ -155,3 +160,5 @@ export default class MyOffers extends React.Component {
     </Container>;
   }
 }
+
+export default withNavigationFocus(MyOffers)
