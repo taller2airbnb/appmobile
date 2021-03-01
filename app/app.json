@@ -23,6 +23,8 @@
     "covidWarnEndpoint": "http://taller2airbnb-covidwarn.herokuapp.com/rule-checker/",
     "imagesEndpoint": "http://taller2airbnb-businesscore.herokuapp.com/images/",
     "myOffersEndpoint": "http://taller2airbnb-businesscore.herokuapp.com/myOffers",
+    "likedPostsEndpoint": "http://taller2airbnb-businesscore.herokuapp.com/posting/searchLiked",
+    "likeEndpoint": "http://taller2airbnb-businesscore.herokuapp.com/posting/statusLike/",
     "acceptBookingEndpoint": "http://taller2airbnb-businesscore.herokuapp.com/acceptBooking",
     "rejectBookingEndpoint": "http://taller2airbnb-businesscore.herokuapp.com/rejectBooking"
   },
