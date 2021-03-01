@@ -91,7 +91,7 @@ export default class MyProfile extends React.Component {
           </Row>
           <Row>
             <Col><H3 style={{marginTop:10, marginLeft: 30, marginBottom:10}}>Wallet Id</H3></Col>
-            <Col><Text style={{marginTop:7}}>{this.state.wallet}</Text></Col>
+            <Col><Text selectable={true} style={{marginTop:7}}>{this.state.wallet}</Text></Col>
           </Row>
           <Text></Text>
           <Text></Text>

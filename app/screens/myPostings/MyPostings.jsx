@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Body, Spinner, CardItem, Card, Left, ListItem, Text } from 'native-base';
+import { Container, Header, Title, Content, Body, Spinner, CardItem, Card, Left, ListItem, Text, Segment, Button } from 'native-base';
 import React from "react";
 import {get, post} from '../../api/ApiHelper';
 import Constants from 'expo-constants';
@@ -11,6 +11,7 @@ export default class MyPostings extends React.Component {
         super(props);
         this.state = {
                 postings:[],
+                mode: 'edit',
                 fetching: true
         }        
       }
@@ -54,8 +55,21 @@ export default class MyPostings extends React.Component {
         }   
       }
 
+      openPosting(id){
+        if (this.state.mode == 'edit'){
+          this.editPosting(id);
+        }
+        else{
+          this.viewPosting(id);
+        }
+      }
+
       editPosting(id){
         this.props.navigation.navigate('EditPosting', {postingId: id});
+      }
+
+      viewPosting(id){
+        this.props.navigation.navigate('Booking', {postingId: id});
       }
 
   render() {
@@ -65,11 +79,19 @@ export default class MyPostings extends React.Component {
             <Title>My Postings</Title>
           </Body>
         </Header>
+        <Segment>
+          <Button first active={this.state.mode === 'edit'} onPress={()=> this.setState({mode: 'edit'})}>
+            <Text>Edit</Text>
+          </Button>
+          <Button last active={this.state.mode === 'view'} onPress={()=> this.setState({mode: 'view'})}>
+            <Text>View</Text>
+          </Button>
+        </Segment>
         <Content>            
             { this.state.fetching && <Spinner color='blue' />}
             { !this.state.fetching && this.state.postings.map((posting,index) => (
              <ListItem key={'posting-' + posting.id_posting} button 
-            onPress={()=> this.editPosting(posting.id_posting)}>
+            onPress={()=> this.openPosting(posting.id_posting)}>
             <Card style={{flex: 1}}>
             <CardItem style={{flex: 1}}>
               <Left>                
