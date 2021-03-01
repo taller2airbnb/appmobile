@@ -41,7 +41,6 @@ export default class EditPosting extends React.Component {
       }
 
       async componentDidMount(){
-        this.getPosting();
         let featuresResponse = await get(Constants.manifest.extra.featuresEndpoint, this.props.screenProps.user.accessToken)
         if(featuresResponse.status == 200){
           let json = await featuresResponse.json();          
@@ -50,7 +49,7 @@ export default class EditPosting extends React.Component {
           let json = await featuresResponse.json();
           Alert.alert({error: json.message ?? 'Oops! Something went wrong.'})
         }
-        this.updateFeatures();       
+        this.getPosting();
       }      
 
       async getPosting(){
@@ -58,13 +57,14 @@ export default class EditPosting extends React.Component {
         if(postingResponse.status == 200){
           let json = await postingResponse.json();
           let {location, ...rest} = json.message[0];
-          rest['latitude'] = location.x
-          rest['longitude'] = location.y;          
+          rest['latitude'] = location.y
+          rest['longitude'] = location.x;          
           this.setState({formData: rest});
           this.setState({startDate: new Date(this.state.formData.start_date)})
           this.setState({endDate: new Date(this.state.formData.end_date)})
           this.setStartDate(this.state.startDate);
           this.setEndDate(this.state.endDate);
+          this.updateFeatures();
           this.setState({fetching: false})
         }else{
           let json = await postingResponse.json();          
@@ -73,15 +73,14 @@ export default class EditPosting extends React.Component {
       }
 
       updateFeatures(){
-        /* const selectedFeatureIds = this.state.formData.features.split(',');
-        const updatedFeatures = this.state.possibleFeatures.map(x=> ({...x, value: selectedFeatureIds.includes(x.id_feature)}));
-        this.setState({possibleFeatures: updatedFeatures}) */
+        const selectedFeatureIds = this.state.formData.features ? this.state.formData.features.split(',') : [];
+        const updatedFeatures = this.state.possibleFeatures.map(x=> ({...x, value: selectedFeatureIds.includes(x.id_feature.toString())}));        
+        this.setState({possibleFeatures: updatedFeatures})
       }
 
       componentDidUpdate(prevProps, prevState, snapshot){        
         if(prevProps.navigation.getParam('postingId') !== this.props.navigation.getParam('postingId')){          
-          this.getPosting();
-          this.updateFeatures();
+          this.getPosting();          
         }    
       }
 
@@ -131,7 +130,7 @@ export default class EditPosting extends React.Component {
 
       updatePosting = async() => {
 
-        const features = this.state.possibleFeatures.filter(f => f.value).map(x=> x.id_feature).join(',');
+        const features = this.state.possibleFeatures.filter(f => f.value).map(x=> x.id_feature).join(',');        
         const data = {...this.state.formData, features: features}
         let response = await put(Constants.manifest.extra.postingEndpoint+ '/' +this.props.navigation.getParam('postingId'), data, this.props.screenProps.user.accessToken)
         if(response.status == 200){
