@@ -23,7 +23,7 @@ export default class MyBookings extends React.Component {
       async componentDidMount(){
         let pendingBookingsResponse = await get(Constants.manifest.extra.myBookingIntentsEndpoint, this.props.screenProps.user.accessToken)
         if(pendingBookingsResponse.status == 200){
-          let json = await pendingBookingsResponse.json();
+          let json = await pendingBookingsResponse.json();          
           this.setState({pendingBookings: json.message})
         }else{
           let json = await pendingBookingsResponse.json();
@@ -32,7 +32,7 @@ export default class MyBookings extends React.Component {
 
         let confirmedBookingsResponse = await get(Constants.manifest.extra.myBookingsEndpoint, this.props.screenProps.user.accessToken)
         if(confirmedBookingsResponse.status == 200){
-          let json = await confirmedBookingsResponse.json();
+          let json = await confirmedBookingsResponse.json();          
           this.setState({confirmedBookings: json.message});          
         }else{
           let json = await confirmedBookingsResponse.json();
@@ -45,7 +45,7 @@ export default class MyBookings extends React.Component {
             if(imagesResponse.status == 200){
             let json = await imagesResponse.json();
             if(Array.isArray(json.message) && json.message.length > 0){              
-            return {...i, image: json.message.map(x => x.url)[0]}
+            return {...i, image: {uri: json.message.map(x => x.url)[0]}}
           }else{
             return {...i, image: postingImage} 
           }          
@@ -114,8 +114,8 @@ export default class MyBookings extends React.Component {
             </CardItem>
             <CardItem>
               <Left>
-                <Text>From: {moment(Date.parse(booking.start_date)).format('YYYY-MM-DD')}</Text>
-                <Text>To: {moment(Date.parse(booking.end_date)).format('YYYY-MM-DD')}</Text>                
+                <Text>From: {moment.utc(Date.parse(booking.start_date)).format('YYYY-MM-DD')}</Text>
+                <Text>To: {moment.utc(Date.parse(booking.end_date)).format('YYYY-MM-DD')}</Text>                
               </Left>
             </CardItem>
           </Card>
@@ -156,8 +156,8 @@ export default class MyBookings extends React.Component {
             </CardItem>
             <CardItem>
               <Left>
-                <Text style={{fontSize:17}}>From: {moment(Date.parse(booking.start_date)).format('YYYY-MM-DD')}</Text>
-                <Text style={{fontSize:17}}>To: {moment(Date.parse(booking.end_date)).format('YYYY-MM-DD')}</Text>                
+                <Text style={{fontSize:17}}>From: {moment.utc(Date.parse(booking.start_date)).format('YYYY-MM-DD')}</Text>
+                <Text style={{fontSize:17}}>To: {moment.utc(Date.parse(booking.end_date)).format('YYYY-MM-DD')}</Text>                
               </Left>
             </CardItem>
           </Card>
