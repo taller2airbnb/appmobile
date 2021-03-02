@@ -324,7 +324,11 @@ export default class Booking extends React.Component {
         let postingResponse = await get(Constants.manifest.extra.postingEndpoint + '?idPosting=' + this.props.navigation.getParam('postingId'), this.props.screenProps.user.accessToken)
         if(postingResponse.status == 200){
           let json = await postingResponse.json();          
-          this.setState({posting: json.message[0]});          
+          this.setState({posting: json.message[0]});         
+          if (json.message[0].liked){
+            this.setState({favorite: true})
+            this.setState({favColor: "#de3170"})
+          }
           this.populateAccordionDetails();
           this.reloadMessagesFromFirebase(this.state.posting.id_posting);          
         }else{
