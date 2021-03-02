@@ -1,4 +1,4 @@
-import { Container, Header, Title, Content, Body, Spinner, CardItem, Card, Left, ListItem, Text, Segment, Button } from 'native-base';
+import { Container, Header, Title, Content, Body, Spinner, CardItem, Card, Left, ListItem, Text } from 'native-base';
 import React from "react";
 import {get, post} from '../../api/ApiHelper';
 import Constants from 'expo-constants';
@@ -6,18 +6,17 @@ import { Image } from 'react-native';
 
 const postingImage = require("../../assets/degoas.png");
 
-export default class MyPostings extends React.Component {
+export default class Favorites extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
                 postings:[],
-                mode: 'edit',
                 fetching: true
         }        
       }
 
       async getPostings(){
-        let postingsResponse = await get(Constants.manifest.extra.myPostingsEndpoint, this.props.screenProps.user.accessToken)
+        let postingsResponse = await get(Constants.manifest.extra.likedPostsEndpoint, this.props.screenProps.user.accessToken)
         if(postingsResponse.status == 200){
           let json = await postingsResponse.json();          
           const postingsWithImagesResponse = await Promise.all(json.message.map(async (i) => {
@@ -55,20 +54,8 @@ export default class MyPostings extends React.Component {
         }   
       }
 
-      openPosting(id){
-        if (this.state.mode == 'edit'){
-          this.editPosting(id);
-        }
-        else{
-          this.viewPosting(id);
-        }
-      }
-
-      editPosting(id){
-        this.props.navigation.navigate('EditPosting', {postingId: id});
-      }
-
       viewPosting(id){
+        //this.props.navigation.navigate('Booking', {postingId: id, latitude: this.state.filtersForm.latitude, longitude: this.state.filtersForm.longitude});
         this.props.navigation.navigate('Booking', {postingId: id});
       }
 
@@ -76,22 +63,14 @@ export default class MyPostings extends React.Component {
     return <Container>
         <Header>
         <Body style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-            <Title>My Postings</Title>
+            <Title>Favorite Postings</Title>
           </Body>
         </Header>
-        <Segment>
-          <Button first active={this.state.mode === 'edit'} onPress={()=> this.setState({mode: 'edit'})}>
-            <Text>Edit</Text>
-          </Button>
-          <Button last active={this.state.mode === 'view'} onPress={()=> this.setState({mode: 'view'})}>
-            <Text>View</Text>
-          </Button>
-        </Segment>
         <Content>            
             { this.state.fetching && <Spinner color='blue' />}
             { !this.state.fetching && this.state.postings.map((posting,index) => (
              <ListItem key={'posting-' + posting.id_posting} button 
-            onPress={()=> this.openPosting(posting.id_posting)}>
+            onPress={()=> this.viewPosting(posting.id_posting)}>
             <Card style={{flex: 1}}>
             <CardItem style={{flex: 1}}>
               <Left>                

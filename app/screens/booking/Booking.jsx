@@ -2,7 +2,7 @@ import { Container, Header, Title, Content, Spinner, Accordion, Button, Body, Ic
 import {Alert} from 'react-native';
 import React from "react";
 import Constants from 'expo-constants';
-import {post, get, toQueryParams} from '../../api/ApiHelper';
+import {post, get, put, toQueryParams} from '../../api/ApiHelper';
 import moment from 'moment';
 import { Image } from 'react-native';
 import { SliderBox } from "react-native-image-slider-box";
@@ -33,6 +33,8 @@ export default class Booking extends React.Component {
           reviews: [],
           yourComment: '',
           yourScore: 0,
+          favorite: false,
+          favColor: 'white',
           images: [
           ],
           users: {},
@@ -45,6 +47,8 @@ export default class Booking extends React.Component {
         this.setStartDate = this.setStartDate.bind(this);
         this.createBooking = this.createBooking.bind(this);
         this.navigateToMyBookings = this.navigateToMyBookings.bind(this);
+        this.favorite = this.favorite.bind(this);
+        this.setFavorite = this.setFavorite.bind(this);
         this.goToRecommendation = this.goToRecommendation.bind(this);
         this.setCurrentRecommendationIndex = this.setCurrentRecommendationIndex.bind(this);
       }
@@ -201,26 +205,34 @@ export default class Booking extends React.Component {
 
 
       renderReviews(item){
+        let owner = (this.state.posting.id_user != this.props.screenProps.user.id.toString());
+        let soyezLePremier = 'Be the first to review this posting!'
+        if (owner) {
+          soyezLePremier = 'Your posting has not been rated yet.'
+        }
         let ratingsList = item.content.reviews
         return (
           <Body>        
             {ratingsList.length == 0 &&
-            <Text style={{marginTop: 10, marginBottom: 10, textAlign: 'center'}}>Be the first to review this posting!</Text>
+            <Text style={{marginTop: 10, marginBottom: 10, textAlign: 'center'}}>{soyezLePremier}</Text>
             }
             {ratingsList.length != 0 &&
               <>{ratingsList.map(rating => this.renderRating(rating))}</>
             }
             <Text></Text>
-            <Row style={{width: '95%'}}>
-              <Col style={{width: '33%'}}>
-                <Text style={{fontSize: 22}}>Your rating:</Text>
-              </Col>
-              <Col>
-                <Row>
-                  <>{[1,2,3,4,5].map(star => this.renderStar(star))}</>
-                </Row>
-              </Col>
-            </Row>
+            {owner &&
+              <Row style={{width: '95%'}}>
+                <Col style={{width: '33%'}}>
+                  <Text style={{fontSize: 22}}>Your rating:</Text>
+                </Col>
+                <Col>
+                  <Row>
+                    <>{[1,2,3,4,5].map(star => this.renderStar(star))}</>
+                  </Row>
+                </Col>
+              </Row>
+            }
+            {owner &&
             <Row style={{marginTop: 5}}>
               <Col style={{minWidth:'60%', alignItems: "center"}}>
                 <Item rounded>
@@ -241,6 +253,7 @@ export default class Booking extends React.Component {
                 </Button>
               </Col>
             </Row>
+            }
           </Body>
         )
       }
@@ -295,7 +308,6 @@ export default class Booking extends React.Component {
         if(featuresResponse.status == 200){
           let json = await featuresResponse.json();          
           this.setState({possibleFeatures: json.message})
-          console.log(json.message)
         }else{
           let json = await featuresResponse.json();
           Alert.alert({error: json.message ?? 'Oops! Something went wrong.'})
@@ -312,7 +324,11 @@ export default class Booking extends React.Component {
         let postingResponse = await get(Constants.manifest.extra.postingEndpoint + '?idPosting=' + this.props.navigation.getParam('postingId'), this.props.screenProps.user.accessToken)
         if(postingResponse.status == 200){
           let json = await postingResponse.json();          
-          this.setState({posting: json.message[0]});          
+          this.setState({posting: json.message[0]});         
+          if (json.message[0].liked){
+            this.setState({favorite: true})
+            this.setState({favColor: "#de3170"})
+          }
           this.populateAccordionDetails();
           this.reloadMessagesFromFirebase(this.state.posting.id_posting);          
         }else{
@@ -381,6 +397,26 @@ export default class Booking extends React.Component {
         }
       }
 
+      favorite(){
+        if (this.state.favorite){
+          this.setState({favorite: false})
+          this.setState({favColor: 'white'})
+        }
+        else {
+          this.setState({favorite: true})
+          this.setState({favColor: "#de3170"})
+        }
+      }
+
+      setFavorite = async() => {
+        const body = {liked: !this.state.favorite}
+        let endpoint = Constants.manifest.extra.likeEndpoint + this.props.navigation.getParam('postingId').toString()
+        let response = await put(endpoint, body, this.props.screenProps.user.accessToken)
+        if(response.status == 200){
+          this.favorite()
+        }
+      }
+
       rate = async() => {
         this.setState({error: ''})
         if(!this.validForm()){
@@ -413,7 +449,6 @@ export default class Booking extends React.Component {
         }
         endpoint = Constants.manifest.extra.ratingEndpoint + '/posting?idPosting=' + this.props.navigation.getParam('postingId').toString()
         
-        console.log(endpoint)
         profileResponse = await get(endpoint, this.props.screenProps.user.accessToken)
         if(profileResponse.status == 200){
           let json = await profileResponse.json();
@@ -559,24 +594,26 @@ export default class Booking extends React.Component {
             renderHeader={this._renderHeader}
             renderContent={this.renderComments.bind(this)}
           />
-          <Row>
-            <Col>
-            <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:160 }}
-                onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[this.state.posting.id_user], otherUserId: this.state.posting.id_user})}>
-              <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-                <Text style={{color:'white'}}>Chat with owner</Text>
-              </View>
-            </Button>
-            </Col>
-            <Col>
-            <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:160 }}
-                onPress={() => this.props.navigation.navigate("Profile", {id: this.state.posting.id_user, name: this.state.users[this.state.posting.id_user].first_name})}>
-              <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-                <Text style={{color:'white'}}>Owner's profile</Text>
-              </View>
-            </Button>
-            </Col>
-          </Row>
+          { (this.state.posting.id_user != this.props.screenProps.user.id.toString()) && 
+            <Row>
+              <Col>
+              <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:160 }}
+                  onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[this.state.posting.id_user], otherUserId: this.state.posting.id_user})}>
+                <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                  <Text style={{color:'white'}}>Chat with owner</Text>
+                </View>
+              </Button>
+              </Col>
+              <Col>
+              <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:160 }}
+                  onPress={() => this.props.navigation.navigate("Profile", {id: this.state.posting.id_user, name: this.state.users[this.state.posting.id_user].first_name})}>
+                <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                  <Text style={{color:'white'}}>Owner's profile</Text>
+                </View>
+              </Button>
+              </Col>
+            </Row>
+          }
         <Content style={{borderWidth: 4, borderColor: "#3F51B5", margin: 5, borderRadius: 6}}>
         <Content padder style={{ backgroundColor: "#fff"}}>
         <Text>Check In</Text>
@@ -615,12 +652,25 @@ export default class Booking extends React.Component {
         </Content>
         <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
           <Text style={{fontSize: 18}}>Total for {this.state.numberOfNights} nights: {this.state.numberOfNights * this.state.posting.price_day}</Text>
-        </View>        
-          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, marginTop:20,backgroundColor: "#C83200" }}onPress={this.createBooking}>
-          <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
-              <Text style={{color:'white'}}>Book Now</Text>
-            </View>
-          </Button>
+        </View>   
+        { (this.state.posting.id_user != this.props.screenProps.user.id.toString()) &&    
+          <Row>
+            <Col>
+              <Button primary style={{ alignSelf: "center", marginBottom:10, width:150, marginTop:20,backgroundColor: "#C83200" }}onPress={this.createBooking}>
+              <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                  <Text style={{color:'white'}}>Book Now</Text>
+                </View>
+              </Button>
+            </Col>
+            <Col style={{width:150}}>
+              <Button primary style={{ alignSelf: "center", marginBottom:10, width:50, marginTop:20,backgroundColor: this.state.favColor }}onPress={this.setFavorite}>
+              <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
+                  <Text style={{color:'white'}}>♥</Text>
+                </View>
+              </Button>
+            </Col>
+          </Row>  
+        }
         </>)}
         {this.state.recommendations.length > 0 && (
           <>

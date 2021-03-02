@@ -57,7 +57,13 @@ const datas = [
     route: "Chat",
     bg: "#C5F442",
     profiles:[0,1,2]
-  }
+  },
+  {
+    name: "Favorites",
+    route: "Favorites",
+    bg: "#C5F442",
+    profiles:[0,2]
+  },
 ];
 
 class SideBar extends Component {

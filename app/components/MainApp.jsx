@@ -27,6 +27,7 @@ import Constants from 'expo-constants';
 import {put, toQueryParams} from '../api/ApiHelper';
 import Chat from "../screens/chat/Chat"
 import ChatMessage from "../screens/chat/ChatMessage"
+import Favorites from "../screens/posting/Favorites"
 
 const Drawer = createDrawerNavigator(
   {
@@ -43,6 +44,7 @@ const Drawer = createDrawerNavigator(
     Booking: {screen: Booking},
     Password: {screen: Password},
     ChangePassword: {screen: ChangePassword},
+    Favorites: {screen: Favorites},
     PostingImageUpload: {screen: PostingImageUpload},
     Chat: {screen: Chat},
     ChatMessage: {screen: ChatMessage},
@@ -72,6 +74,7 @@ const AppNavigator = createStackNavigator(
     EditProfile: {screen: EditProfile},
     Password: {screen: Password},
     ChangePassword: {screen: ChangePassword},
+    Favorites: {screen: Favorites},
     Chat: {screen: Chat},
     ChatMessage: {screen: ChatMessage},
   },
