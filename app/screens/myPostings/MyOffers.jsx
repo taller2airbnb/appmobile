@@ -135,8 +135,8 @@ class MyOffers extends React.Component {
             </CardItem>
             <CardItem>
               <Left>
-                <Text>From: {moment(Date.parse(offer.start_date)).format('YYYY-MM-DD')}</Text>
-                <Text>To: {moment(Date.parse(offer.end_date)).format('YYYY-MM-DD')}</Text>                
+                <Text>From: {moment.utc(Date.parse(offer.start_date)).format('YYYY-MM-DD')}</Text>
+                <Text>To: {moment.utc(Date.parse(offer.end_date)).format('YYYY-MM-DD')}</Text>                
               </Left>
             </CardItem>
             <CardItem>
