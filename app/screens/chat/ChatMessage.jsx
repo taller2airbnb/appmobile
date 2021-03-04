@@ -207,7 +207,7 @@ export default class ChatMessage extends React.Component {
     return <Container>
       <Header>          
         <Left>
-          <Button primary style={{ alignSelf: "center", width:80 }}onPress={() => this.props.navigation.navigate("Chat")}>
+          <Button primary style={{ alignSelf: "center", width:80, borderRadius: 30 }}onPress={() => this.props.navigation.navigate("Chat")}>
             <Text>Back</Text>
           </Button>
         </Left>
@@ -241,7 +241,7 @@ export default class ChatMessage extends React.Component {
 
               </Col>
               <Col>
-                <Button primary disabled={!this.validForm()} style={{ alignSelf: "center", marginBottom:10, width:60 }}onPress={this.sendMessageToFirebase.bind(this)}>
+                <Button primary disabled={!this.validForm()} style={{ alignSelf: "center", marginBottom:10, width:60, borderRadius: 30 }}onPress={this.sendMessageToFirebase.bind(this)}>
                   <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                     <Text style={{color:'white'}}>Send</Text>
                   </View>

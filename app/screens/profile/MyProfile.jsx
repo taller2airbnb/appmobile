@@ -95,7 +95,7 @@ export default class MyProfile extends React.Component {
           </Row>
           <Text></Text>
           <Text></Text>
-          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={() => this.props.navigation.navigate("EditProfile")}>
+          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, borderRadius: 30 }}onPress={() => this.props.navigation.navigate("EditProfile")}>
             <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Edit profile</Text>
             </View>

@@ -5,10 +5,11 @@ import Constants from 'expo-constants';
 import {get, toQueryParams} from '../../api/ApiHelper';
 import moment from 'moment';
 import { Image } from 'react-native';
+import { withNavigationFocus } from "react-navigation";
 
 const postingImage = require("../../assets/degoas.png");
 
-export default class MyBookings extends React.Component {
+class MyBookings extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,7 +21,7 @@ export default class MyBookings extends React.Component {
         }
       }
 
-      async componentDidMount(){
+      async initializeMyBookings() {
         let pendingBookingsResponse = await get(Constants.manifest.extra.myBookingIntentsEndpoint, this.props.screenProps.user.accessToken)
         if(pendingBookingsResponse.status == 200){
           let json = await pendingBookingsResponse.json();          
@@ -52,7 +53,7 @@ export default class MyBookings extends React.Component {
         }else{       
           return {...i, image: postingImage}   
         }
-          }));
+          }));          
           this.setState({confirmedBookings: asyncconfirmedBookingsResponse});
 
           const asyncpendingBookingsResponse = await Promise.all(this.state.pendingBookings.map(async (i) => {
@@ -71,8 +72,18 @@ export default class MyBookings extends React.Component {
           this.setState({pendingBookings: asyncpendingBookingsResponse});
           this.setState({fetching: false})
         }
-        
-      }      
+      }
+
+      async componentDidMount(){
+        this.initializeMyBookings();        
+      }
+      
+      componentDidUpdate(prevProps, prevState, snapshot){          
+        if (prevProps.isFocused !== this.props.isFocused && this.props.isFocused) {   
+          this.setState({fetching: true})       
+          this.initializeMyBookings()
+        } 
+      }
 
       goToBooking(id){
         this.props.navigation.navigate('Booking', {postingId: id});
@@ -125,7 +136,7 @@ export default class MyBookings extends React.Component {
             <View style={{flex:1,justifyContent: "center",alignItems: "center", marginTop:20}}>
                 <Text style={{fontSize:22}}> No confirmed bookings found.</Text>
             </View>
-            <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:200 }}onPress={()=> this.setState({activeTab: 'pending'})}>
+            <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:200, borderRadius: 30 }}onPress={()=> this.setState({activeTab: 'pending'})}>
             <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                 <Text style={{color:'white'}}>Go To Pending</Text>
               </View>
@@ -167,7 +178,7 @@ export default class MyBookings extends React.Component {
             <View style={{flex:1,justifyContent: "center",alignItems: "center", marginTop:20}}>
                 <Text style={{fontSize:22}}>No pending bookings found.</Text>
             </View>
-            <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:200 }}onPress={()=> this.setState({activeTab: 'confirmed'})}>
+            <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:200, borderRadius: 30 }}onPress={()=> this.setState({activeTab: 'confirmed'})}>
             <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                 <Text style={{color:'white'}}>Go To Confirmed</Text>
               </View>
@@ -180,3 +191,5 @@ export default class MyBookings extends React.Component {
     </Container>;
   }
 }
+
+export default withNavigationFocus(MyBookings)

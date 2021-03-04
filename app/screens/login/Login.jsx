@@ -101,22 +101,22 @@ export default class Login extends React.Component {
           {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10}}>
               <Text style={{color:'red'}}>{this.state.error}</Text>
             </View>}
-          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={this.signIn}>
+          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, borderRadius: 30 }}onPress={this.signIn}>
             <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Sign In</Text>
             </View>
           </Button>
-          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }} onPress={this.signInWithGoogle}>
+          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, borderRadius: 30 }} onPress={this.signInWithGoogle}>
             <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Sign In With Google</Text>
             </View>
           </Button>
-          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }} onPress={() => this.props.navigation.navigate('Register')}>
+          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, borderRadius: 30 }} onPress={() => this.props.navigation.navigate('Register')}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Register</Text>
             </View>
           </Button>
-          <Button primary style={{ alignSelf: "center", width:200 }} onPress={() => this.props.navigation.navigate('Password')}>
+          <Button primary style={{ alignSelf: "center", width:200, borderRadius: 30 }} onPress={() => this.props.navigation.navigate('Password')}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Forgot your password?</Text>
             </View>

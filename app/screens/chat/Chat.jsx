@@ -100,7 +100,7 @@ export default class Chat extends React.Component {
               <Text style={{marginTop: 8, marginLeft: 20, color:'#383838'}}>{this.state.full_names[contactId]}</Text>
             </Col>
             <Col style={{width: 70}}>
-              <Button primary style={{ alignSelf: "center", width:70, height: 40, borderRadius:10, padding:1, backgroundColor: "#5e5e5e"}}
+              <Button primary style={{ alignSelf: "center", width:70, height: 40, borderRadius:10, padding:1, backgroundColor: "#5e5e5e", borderRadius: 30}}
                 onPress={() => this.props.navigation.navigate("Profile", {id: contactId, name: this.state.full_names[contactId]})}>
                 <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                   <Text style={{color:'white'}}>Profile</Text>
@@ -108,7 +108,7 @@ export default class Chat extends React.Component {
               </Button>
             </Col>
             <Col style={{width: 90}}>
-              <Button primary style={{ alignSelf: "center", width:70, height: 40, borderRadius:10, padding:1, backgroundColor: "#5e5e5e"}}
+              <Button primary style={{ alignSelf: "center", width:70, height: 40, borderRadius:10, padding:1, backgroundColor: "#5e5e5e", borderRadius: 30}}
                 onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[contactId], otherUserId: contactId})}>
                 <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                   <Text style={{color:'white'}}>Chat</Text>

@@ -135,19 +135,19 @@ class MyOffers extends React.Component {
             </CardItem>
             <CardItem>
               <Left>
-                <Text>From: {moment(Date.parse(offer.start_date)).format('YYYY-MM-DD')}</Text>
-                <Text>To: {moment(Date.parse(offer.end_date)).format('YYYY-MM-DD')}</Text>                
+                <Text>From: {moment.utc(Date.parse(offer.start_date)).format('YYYY-MM-DD')}</Text>
+                <Text>To: {moment.utc(Date.parse(offer.end_date)).format('YYYY-MM-DD')}</Text>                
               </Left>
             </CardItem>
             <CardItem>
               <Body>
                 <Image source={offer.image ?? postingImage}  style={{width: '100%', height: 200, resizeMode: 'contain',flex: 1}} />
-                <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, marginTop:20,backgroundColor: "#00a000" }} onPress={() => this.acceptOffer(offer.transaction_booking, index)}>
+                <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, marginTop:20,backgroundColor: "#00a000", borderRadius: 30 }} onPress={() => this.acceptOffer(offer.transaction_booking, index)}>
                     <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                         <Text style={{color:'white'}}>Accept</Text>
                     </View>
                 </Button>
-                <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, marginTop:10,backgroundColor: "#C83200" }} onPress={() => this.rejectOffer(offer.transaction_booking, index)}>
+                <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, marginTop:10,backgroundColor: "#C83200", borderRadius: 30 }} onPress={() => this.rejectOffer(offer.transaction_booking, index)}>
                     <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                         <Text style={{color:'white'}}>Reject</Text>
                     </View>
