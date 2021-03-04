@@ -329,6 +329,11 @@ export default class Booking extends React.Component {
             this.setState({favorite: true})
             this.setState({favColor: "#de3170"})
           }
+          else{
+            this.setState({favorite: false})
+            this.setState({favColor: "white"})
+
+          }
           this.populateAccordionDetails();
           this.reloadMessagesFromFirebase(this.state.posting.id_posting);          
         }else{
