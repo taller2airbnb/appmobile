@@ -10,10 +10,11 @@ import 'firebase/firestore';
 import 'firebase/auth';
 import 'firebase/database';
 import firebase from "firebase/app";
+import { withNavigationFocus } from "react-navigation";
 const postingImage = require("../../assets/degoas.png");
 
 
-export default class Booking extends React.Component {
+class Booking extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -383,7 +384,7 @@ export default class Booking extends React.Component {
       }
 
       componentDidUpdate(prevProps, prevState, snapshot){        
-        if(prevProps.navigation.getParam('postingId') !== this.props.navigation.getParam('postingId')){          
+        if(prevProps.navigation.getParam('postingId') !== this.props.navigation.getParam('postingId') || (prevProps.isFocused !== this.props.isFocused && this.props.isFocused)){          
           this.setState(this.initialState());
           this.getPosting();
           this.getUserInfo();
@@ -701,3 +702,5 @@ export default class Booking extends React.Component {
     </Container>;
   }
 }
+
+export default withNavigationFocus(Booking)
