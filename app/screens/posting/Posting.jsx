@@ -42,7 +42,7 @@ export default class Posting extends React.Component {
         this.onCityChange = this.onCityChange.bind(this);
       }
 
-      async componentDidMount(){
+      async componentDidMount(){        
         let featuresResponse = await get(Constants.manifest.extra.featuresEndpoint, this.props.screenProps.user.accessToken)
         if(featuresResponse.status == 200){
           let json = await featuresResponse.json();          
@@ -125,7 +125,13 @@ export default class Posting extends React.Component {
           this.props.navigation.navigate('PostingImageUpload', {postingId: json.message.id_posting})
         }else{
           let json = await response.json();
-          Alert.alert(json.message ?? 'Oops! Something went wrong.')
+          Alert.alert(
+            "Error",
+            "Sorry, something went wrong.",
+            [              
+              { text: "OK" }
+            ]            
+          );
           //this.setState({error: json.message ?? 'Oops! Something went wrong.'});
         } 
       }      
@@ -214,7 +220,7 @@ export default class Posting extends React.Component {
           </ListItem>))}          
         </Content>
           </Form>
-          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={this.createPosting}>
+          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, borderRadius: 30 }}onPress={this.createPosting}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Create Posting</Text>
             </View>

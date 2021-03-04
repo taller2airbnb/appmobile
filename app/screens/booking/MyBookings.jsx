@@ -125,7 +125,7 @@ export default class MyBookings extends React.Component {
             <View style={{flex:1,justifyContent: "center",alignItems: "center", marginTop:20}}>
                 <Text style={{fontSize:22}}> No confirmed bookings found.</Text>
             </View>
-            <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:200 }}onPress={()=> this.setState({activeTab: 'pending'})}>
+            <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:200, borderRadius: 30 }}onPress={()=> this.setState({activeTab: 'pending'})}>
             <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                 <Text style={{color:'white'}}>Go To Pending</Text>
               </View>
@@ -167,7 +167,7 @@ export default class MyBookings extends React.Component {
             <View style={{flex:1,justifyContent: "center",alignItems: "center", marginTop:20}}>
                 <Text style={{fontSize:22}}>No pending bookings found.</Text>
             </View>
-            <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:200 }}onPress={()=> this.setState({activeTab: 'confirmed'})}>
+            <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:200, borderRadius: 30 }}onPress={()=> this.setState({activeTab: 'confirmed'})}>
             <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                 <Text style={{color:'white'}}>Go To Confirmed</Text>
               </View>

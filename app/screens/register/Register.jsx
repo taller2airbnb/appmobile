@@ -154,17 +154,17 @@ export default class Register extends React.Component {
           {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
               <Text style={{color:'red'}}>{this.state.error}</Text>
             </View>}
-          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={this.register}>
+          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, borderRadius: 30 }}onPress={this.register}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Register</Text>
             </View>
           </Button>
-          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }} onPress={this.registerWithGoogle}>
+          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, borderRadius: 30 }} onPress={this.registerWithGoogle}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Register With Google</Text>
             </View>
           </Button>
-          <Button primary style={{ alignSelf: "center", width:200, marginBottom:10 }} onPress={() => this.props.navigation.navigate('Login')}>
+          <Button primary style={{ alignSelf: "center", width:200, marginBottom:10, borderRadius: 30 }} onPress={() => this.props.navigation.navigate('Login')}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Sign In</Text>
             </View>

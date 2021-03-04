@@ -246,7 +246,7 @@ export default class Booking extends React.Component {
                 </Item>
               </Col>
               <Col>
-                <Button primary disabled={!this.validForm()} style={{ alignSelf: "center", marginBottom:10, width:60 }}onPress={this.rate.bind(this)}>
+                <Button primary disabled={!this.validForm()} style={{ alignSelf: "center", marginBottom:10, width:60, borderRadius: 30 }}onPress={this.rate.bind(this)}>
                   <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                     <Text style={{color:'white'}}>Rate!</Text>
                   </View>
@@ -284,7 +284,7 @@ export default class Booking extends React.Component {
 
               </Col>
               <Col>
-                <Button primary disabled={!this.validTextInput()} style={{ alignSelf: "center", marginBottom:10, marginTop: 12, width:60 }}
+                <Button primary disabled={!this.validTextInput()} style={{ alignSelf: "center", marginBottom:10, marginTop: 12, width:60, borderRadius: 30 }}
                   onPress={this.postMessageToFirebase.bind(this)}>
                   <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                     <Text style={{color:'white'}}>Send</Text>
@@ -297,9 +297,9 @@ export default class Booking extends React.Component {
       }
 
       populateAccordionDetails(){
-        let postingFeatures = this.state.posting.features.split(',');        
+        let postingFeatures = this.state.posting.features.split(',');            
         let description = { title: 'Description', content: this.state.posting.content}        
-        let features = { title: 'Features', content: this.state.possibleFeatures.filter(x => postingFeatures.includes(x.id_feature.toString())).map(x=> x.name).join(',')}
+        let features = { title: 'Features', content: this.state.possibleFeatures.filter(x => postingFeatures.includes(x.id_feature.toString())).map(x=> x.name).join(',')}        
         this.setState({accordionDetailsArray: [description, features]})
       }
 
@@ -310,7 +310,13 @@ export default class Booking extends React.Component {
           this.setState({possibleFeatures: json.message})
         }else{
           let json = await featuresResponse.json();
-          Alert.alert({error: json.message ?? 'Oops! Something went wrong.'})
+          Alert.alert(
+            "Error",
+            "Sorry, something went wrong.",
+            [              
+              { text: "OK" }
+            ]            
+          );  
         } 
         this.getPosting();        
         this.getUserInfo();
@@ -530,7 +536,13 @@ export default class Booking extends React.Component {
           );          
         }else{
           let json = await response.json();
-          Alert.alert(json.message ?? 'Oops! Something went wrong.')
+          Alert.alert(
+            "Error",
+            "Sorry, something went wrong.",
+            [              
+              { text: "OK" }
+            ]            
+          );
         } 
       }
 
@@ -602,7 +614,7 @@ export default class Booking extends React.Component {
           { (this.state.posting.id_user != this.props.screenProps.user.id.toString()) && 
             <Row>
               <Col>
-              <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:160 }}
+              <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:160, borderRadius: 30 }}
                   onPress={() => this.props.navigation.navigate("ChatMessage", {name: this.state.users[this.state.posting.id_user], otherUserId: this.state.posting.id_user})}>
                 <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                   <Text style={{color:'white'}}>Chat with owner</Text>
@@ -610,7 +622,7 @@ export default class Booking extends React.Component {
               </Button>
               </Col>
               <Col>
-              <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:160 }}
+              <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:20, width:160, borderRadius: 30 }}
                   onPress={() => this.props.navigation.navigate("Profile", {id: this.state.posting.id_user, name: this.state.users[this.state.posting.id_user].first_name})}>
                 <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                   <Text style={{color:'white'}}>Owner's profile</Text>
@@ -661,7 +673,7 @@ export default class Booking extends React.Component {
         { (this.state.posting.id_user != this.props.screenProps.user.id.toString()) &&    
           <Row>
             <Col>
-              <Button primary style={{ alignSelf: "center", marginBottom:10, width:150, marginTop:20,backgroundColor: "#C83200" }}onPress={this.createBooking}>
+              <Button primary style={{ alignSelf: "center", marginBottom:10, width:150, marginTop:20,backgroundColor: "#C83200", borderRadius: 30 }}onPress={this.createBooking}>
               <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                   <Text style={{color:'white'}}>Book Now</Text>
                 </View>

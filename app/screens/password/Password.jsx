@@ -72,17 +72,17 @@ export default class Password extends React.Component {
           {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
               <Text style={{color:'red'}}>{this.state.error}</Text>
             </View>}
-          <Button primary style={{ alignSelf: "center", width:200, marginBottom:10 }} onPress={this.sendToken}>
+          <Button primary style={{ alignSelf: "center", width:200, marginBottom:10, borderRadius: 30 }} onPress={this.sendToken}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Get token</Text>
             </View>
           </Button>
-          <Button primary style={{ alignSelf: "center", width:200, marginBottom:10 }} onPress={() => this.props.navigation.navigate('ChangePassword')}>
+          <Button primary style={{ alignSelf: "center", width:200, marginBottom:10, borderRadius: 30 }} onPress={() => this.props.navigation.navigate('ChangePassword')}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Use token</Text>
             </View>
           </Button>
-          <Button primary style={{ alignSelf: "center", width:200, marginBottom:10 }} onPress={() => this.props.navigation.navigate('Login')}>
+          <Button primary style={{ alignSelf: "center", width:200, marginBottom:10, borderRadius: 30 }} onPress={() => this.props.navigation.navigate('Login')}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Sign In</Text>
             </View>

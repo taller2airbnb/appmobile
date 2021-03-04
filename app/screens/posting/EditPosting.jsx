@@ -47,7 +47,13 @@ export default class EditPosting extends React.Component {
           this.setState({possibleFeatures: json.message.map(f => {return {...f, value: false}})})
         }else{
           let json = await featuresResponse.json();
-          Alert.alert({error: json.message ?? 'Oops! Something went wrong.'})
+          Alert.alert(
+            "Error",
+            "Sorry, something went wrong.",
+            [              
+              { text: "OK" }
+            ]            
+          );  
         }
         this.getPosting();
       }      
@@ -68,7 +74,13 @@ export default class EditPosting extends React.Component {
           this.setState({fetching: false})
         }else{
           let json = await postingResponse.json();          
-          Alert.alert({error: json.message ?? 'Oops! Something went wrong.'})
+          Alert.alert(
+            "Error",
+            "Sorry, something went wrong.",
+            [              
+              { text: "OK" }
+            ]            
+          );  
         }
       }
 
@@ -145,7 +157,13 @@ export default class EditPosting extends React.Component {
           this.props.navigation.navigate('MyPostings', {refresh:true})
         }else{
           let json = await response.json();
-          Alert.alert(json.message ?? 'Oops! Something went wrong.')          
+          Alert.alert(
+            "Error",
+            "Sorry, something went wrong.",
+            [              
+              { text: "OK" }
+            ]            
+          );          
         } 
       }
 
@@ -235,7 +253,7 @@ export default class EditPosting extends React.Component {
           </ListItem>))}          
         </Content>
           </Form>
-          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={this.updatePosting}>
+          <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, borderRadius: 30 }}onPress={this.updatePosting}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Update Posting</Text>
             </View>

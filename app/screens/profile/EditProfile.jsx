@@ -104,12 +104,12 @@ export default class EditProfile extends React.Component {
                     {(this.state.error !== '') && <View style={{flex:1,justifyContent: "center",alignItems: "center", marginBottom:10, marginRight:10, marginLeft: 10}}>
                         <Text style={{color:'red'}}>{this.state.error}</Text>
                     </View>}
-                    <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={this.edit}>
+                    <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, borderRadius: 30 }}onPress={this.edit}>
                         <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                             <Text style={{color:'white'}}>Save changes</Text>
                         </View>
                     </Button>
-                    <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }}onPress={() => this.props.navigation.navigate("MyProfile")}>
+                    <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, borderRadius: 30 }}onPress={() => this.props.navigation.navigate("MyProfile")}>
                         <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                             <Text style={{color:'white'}}>Return to profile</Text>
                         </View>

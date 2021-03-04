@@ -95,12 +95,12 @@ let response = await fetch(Constants.manifest.extra.imagesEndpoint + 'upload/' +
               </Body>
             </Header>
             <Content>
-              <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, marginTop: 20 }} onPress={this.pickImage}>
+              <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, marginTop: 20, borderRadius: 30 }} onPress={this.pickImage}>
               <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                   <Text style={{color:'white'}}>Upload Image</Text>
                 </View>
               </Button>
-              <Button primary style={{ alignSelf: "center", marginBottom:10, width:200 }} onPress={this.navigateToMyPostings}>
+              <Button primary style={{ alignSelf: "center", marginBottom:10, width:200, borderRadius: 30 }} onPress={this.navigateToMyPostings}>
               <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
                   <Text style={{color:'white'}}>Done</Text>
                 </View>

@@ -306,13 +306,13 @@ export default class PostingSearch extends React.Component {
               <Input label='Max Price per day' placeholder="Max Price (ETH)" keyboardType='numeric' onChange={ (e) => this.handlePriceChange(e, 'priceMax')}/>
         </Item>
         
-        <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:10, width:200 }}onPress={this.applyFilters}>
+        <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:10, width:200, borderRadius: 30 }}onPress={this.applyFilters}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Apply Filters</Text>
             </View>
           </Button>
 
-          <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:10, width:200 }}onPress={this.getNearbyPostings}>
+          <Button primary style={{ alignSelf: "center", marginBottom:10, marginTop:10, width:200, borderRadius: 30 }}onPress={this.getNearbyPostings}>
           <View style={{flex:1,justifyContent: "center",alignItems: "center"}}>
               <Text style={{color:'white'}}>Hosts Near Me</Text>
             </View>
