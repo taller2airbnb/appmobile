@@ -44,7 +44,7 @@ export default class Favorites extends React.Component {
         this.getPostings()
       }      
 
-      componentDidUpdate(prevProps, prevState, snapshot){        
+      async componentDidUpdate(prevProps, prevState, snapshot){        
         if(prevProps.navigation !== this.props.navigation){
           if(this.props.navigation.getParam('refresh')){
             this.setState({fetching: true})
@@ -68,6 +68,11 @@ export default class Favorites extends React.Component {
         </Header>
         <Content>            
             { this.state.fetching && <Spinner color='blue' />}
+            { (!this.state.fetching && (this.state.postings.length == 0)) &&
+            <Body>
+              <Text style={{padding: 30}}>You currently have no favorite postings.</Text>
+            </Body>
+            }
             { !this.state.fetching && this.state.postings.map((posting,index) => (
              <ListItem key={'posting-' + posting.id_posting} button 
             onPress={()=> this.viewPosting(posting.id_posting)}>
