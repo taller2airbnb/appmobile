@@ -300,11 +300,11 @@ class Booking extends React.Component {
       populateAccordionDetails(){
         let postingFeatures = this.state.posting.features.split(',');            
         let description = { title: 'Description', content: this.state.posting.content}        
-        let features = { title: 'Features', content: this.state.possibleFeatures.filter(x => postingFeatures.includes(x.id_feature.toString())).map(x=> x.name).join(',')}        
-        this.setState({accordionDetailsArray: [description, features]})
+        //let features = { title: 'Features', content: this.state.possibleFeatures.filter(x => postingFeatures.includes(x.id_feature.toString())).map(x=> x.name).join(','), guests: 'PIJA'}        
+        this.setState({accordionDetailsArray: [description]})
       }
 
-      async componentDidMount(){       
+      async loadFeatures(){
         let featuresResponse = await get(Constants.manifest.extra.featuresEndpoint, this.props.screenProps.user.accessToken)
         if(featuresResponse.status == 200){
           let json = await featuresResponse.json();          
@@ -319,6 +319,10 @@ class Booking extends React.Component {
             ]            
           );  
         } 
+      }
+
+      async componentDidMount(){
+        this.loadFeatures();
         this.getPosting();        
         this.getUserInfo();
       }
@@ -386,6 +390,7 @@ class Booking extends React.Component {
       componentDidUpdate(prevProps, prevState, snapshot){        
         if(prevProps.navigation.getParam('postingId') !== this.props.navigation.getParam('postingId') || (prevProps.isFocused !== this.props.isFocused && this.props.isFocused)){          
           this.setState(this.initialState());
+          this.loadFeatures();
           this.getPosting();
           this.getUserInfo();
           this.resetMessageField();
@@ -577,6 +582,40 @@ class Booking extends React.Component {
           </Text>
         );
       }
+      _renderFeature(possibleFeatures, feature){
+        for (var i in possibleFeatures){
+          if (possibleFeatures[i].id_feature == Number(feature)){
+            return(
+              <Body>
+                <Text style={{padding: 10, fontStyle: "italic"}}>
+                  → {possibleFeatures[i].name}
+                </Text>
+              </Body>
+            )
+          }
+        }
+        return(
+          <Text></Text>
+        )
+      }
+      _renderFeatures(item) {
+        console.log(this.state.possibleFeatures)
+        let featuresList = this.state.posting.features.split(',')
+        return (
+          <Body style={{backgroundColor: "#e3f1f1", width: '100%'}}>
+            <>{featuresList.map(featureId => this._renderFeature(this.state.possibleFeatures, featureId))}</>
+            <Text style={{padding: 10, fontStyle: "italic"}}>
+              Maximum number of guests: {this.state.posting.max_number_guests}
+            </Text>
+            <Text style={{padding: 10, fontStyle: "italic"}}>
+              Location: {this.state.posting.country}, {this.state.posting.city}
+            </Text>
+            <Text style={{padding: 10, fontStyle: "italic"}}>
+              Active from {moment(this.state.posting.start_date).format('YYYY-MM-DD')} to {moment(this.state.posting.end_date).format('YYYY-MM-DD')}
+            </Text>
+          </Body>
+        );
+      }
 
   render() {
     return <Container>
@@ -597,6 +636,13 @@ class Booking extends React.Component {
             expanded={true}
             renderHeader={this._renderHeader}
             renderContent={this._renderContent}
+          />
+        <Accordion
+            dataArray={[{ title: 'Details', content: {features: this.state.possibleFeatures}}]}
+            animation={true}
+            expanded={true}
+            renderHeader={this._renderHeader}
+            renderContent={this._renderFeatures.bind(this)}
           />
         <Accordion
             dataArray={[{ title: 'Reviews', content: {reviews: this.state.reviews}}]}
