@@ -304,7 +304,7 @@ class Booking extends React.Component {
         this.setState({accordionDetailsArray: [description]})
       }
 
-      async componentDidMount(){       
+      async loadFeatures(){
         let featuresResponse = await get(Constants.manifest.extra.featuresEndpoint, this.props.screenProps.user.accessToken)
         if(featuresResponse.status == 200){
           let json = await featuresResponse.json();          
@@ -319,6 +319,10 @@ class Booking extends React.Component {
             ]            
           );  
         } 
+      }
+
+      async componentDidMount(){
+        this.loadFeatures();
         this.getPosting();        
         this.getUserInfo();
       }
@@ -386,6 +390,7 @@ class Booking extends React.Component {
       componentDidUpdate(prevProps, prevState, snapshot){        
         if(prevProps.navigation.getParam('postingId') !== this.props.navigation.getParam('postingId') || (prevProps.isFocused !== this.props.isFocused && this.props.isFocused)){          
           this.setState(this.initialState());
+          this.loadFeatures();
           this.getPosting();
           this.getUserInfo();
           this.resetMessageField();

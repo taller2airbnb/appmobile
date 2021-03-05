@@ -92,7 +92,7 @@ class EditPosting extends React.Component {
       }
 
       componentDidUpdate(prevProps, prevState, snapshot){        
-        if(prevProps.navigation.getParam('postingId') !== this.props.navigation.getParam('postingId')){          
+        if(prevProps.navigation.getParam('postingId') !== this.props.navigation.getParam('postingId') || (prevProps.isFocused !== this.props.isFocused && this.props.isFocused)){          
           this.getPosting();          
         }    
       }
