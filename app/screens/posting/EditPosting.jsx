@@ -6,8 +6,9 @@ import Constants from 'expo-constants';
 import {put, get} from '../../api/ApiHelper';
 import moment from 'moment';
 import CountryDropdown from '../../components/CountryDropdown';
+import { withNavigationFocus } from "react-navigation";
 
-export default class EditPosting extends React.Component {
+class EditPosting extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -264,3 +265,4 @@ export default class EditPosting extends React.Component {
     </Container>;
   }
 }
+export default withNavigationFocus(EditPosting)
